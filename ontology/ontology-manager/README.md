@@ -15,7 +15,6 @@
 ### 2. 对象类管理 (Object Type Management)
 - **对象类定义**: 创建和管理知识网络中的对象类
 - **属性定义**: 为对象类定义丰富的属性字段
-- **分支管理**: 对象类的分支管理和版本控制
 - **图标和样式**: 自定义对象类的可视化展示
 
 ### 3. 关系类管理 (Relation Type Management)
@@ -27,22 +26,22 @@
 ### 4. 行动类管理 (Action Type Management)
 - **行动类定义**: 创建和管理知识网络中的行动类
 - **参数配置**: 行动类的输入输出参数定义
-- **权限控制**: 基于角色的行动类权限管理
 - **执行策略**: 行动类的执行策略和规则
 
-### 5. 数据源集成 (Data Source Integration)
+### 5. 概念分组管理 (Concept Group Management)
+- **概念组定义**: 创建和管理知识网络中的概念分组
+- **成员管理**: 管理概念分组成员
+
+### 6. 数据源集成 (Data Source Integration)
 - **多源集成**: 基于VEGA实现多种数据源的集成
 
 ### 6. 任务调度 (Job Scheduling)
 - **后台任务**: 异步任务处理
-- **定时任务**: 周期性任务调度
-- **任务监控**: 任务执行状态监控
-- **失败重试**: 自动失败重试机制
 
 ## 技术架构
 
 ### 技术栈
-- **编程语言**: Go 1.23
+- **编程语言**: Go 1.24
 - **Web框架**: Gin 1.11
 - **数据库**: MariaDB/DM8, OpenSearch
 - **容器化**: Docker, Kubernetes
@@ -56,6 +55,7 @@ server/
 ├── drivenadapters/      # 数据访问层
 │   ├── action_type/     # 动作类数据访问
 │   ├── business_system/ # 业务域数据访问
+│   ├── concept_group/   # 概念分组数据访问
 │   ├── data_model/      # 数据模型数据访问
 │   ├── data_view/       # 数据视图数据访问
 │   ├── job/             # 任务数据访问
@@ -103,6 +103,14 @@ server/
 - **更新动作类**: `PUT /api/ontology-manager/v1/knowledge-networks/{kn_id}/action-types/{id}`
 - **删除动作类**: `DELETE /api/ontology-manager/v1/knowledge-networks/{kn_id}/action-types/{id}`
 
+### 概念分组API
+- **获取概念组列表**: `GET /api/ontology-manager/v1/knowledge-networks/{kn_id}/concept-groups`
+- **创建概念组**: `POST /api/ontology-manager/v1/knowledge-networks/{kn_id}/concept-groups`
+- **更新概念组**: `PUT /api/ontology-manager/v1/knowledge-networks/{kn_id}/concept-groups/{id}`
+- **删除概念组**: `DELETE /api/ontology-manager/v1/knowledge-networks/{kn_id}/concept-groups/{id}`
+- **添加概念组成员**: `POST /api/ontology-manager/v1/knowledge-networks/{kn_id}/concept-groups/{id}/members`
+- **删除概念组成员**: `DELETE /api/ontology-manager/v1/knowledge-networks/{kn_id}/concept-groups/{id}/members/{member_id}`
+
 ### 任务管理API
 - **获取任务列表**: `GET /api/ontology-manager/v1/jobs`
 - **创建任务**: `POST /api/ontology-manager/v1/jobs`
@@ -117,12 +125,12 @@ server/
 ### 系统接口
 - **健康检查**: `GET /health`
 
-详细的API文档请参考: [API文档](../api_doc/)
+详细的API文档请参考: [API文档](./api_doc/)
 
 ## 快速开始
 
 ### 环境要求
-- Go 1.23.0+
+- Go 1.24.0+
 - MariaDB 11.4+
 - OpenSearch 2.x
 
@@ -243,7 +251,9 @@ log:
 
 ## 版本历史
 
-- **v6.0.0**: 基于Go 1.23，支持云原生部署
+- **v6.2.0**: 新增概念分组管理功能
+- **v6.1.0**: 新增任务管理和概念搜索
+- **v6.0.0**: 初始版本，支持核心本体管理功能
 
 ## 支持与联系
 
