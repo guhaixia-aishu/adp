@@ -5,11 +5,11 @@ import exampleZh from "../../assets/example-zh.png";
 import exampleTw from "../../assets/example-tw.png";
 import exampleEn from "../../assets/example-en.png";
 import exampleVi from "../../assets/example-vi.jpg";
-import triggerCN from "../../assets/trigger-zh.mp4";
-import executorCN from "../../assets/executor-zh.mp4";
-import scene1CN from "../../assets/scene1-zh.mp4";
-import scene2CN from "../../assets/scene2-zh.mp4";
-import scene3CN from "../../assets/scene3-zh.mp4";
+// import triggerCN from "../../assets/trigger-zh.mp4";
+// import executorCN from "../../assets/executor-zh.mp4";
+// import scene1CN from "../../assets/scene1-zh.mp4";
+// import scene2CN from "../../assets/scene2-zh.mp4";
+// import scene3CN from "../../assets/scene3-zh.mp4";
 import { detectIE } from "../../utils/browser";
 import guide1Img from "../../assets/guide-1.png";
 import guide2Img from "../../assets/guide-2.png";
@@ -363,7 +363,7 @@ export const GuidePage = () => {
                                 "触发器可以理解为“当某事件发生时，执行后续操作“中的某事件。例如，“当上传文档时，自动添加文档标签”，其中“上传文件”就是触发器。在一个自动化工作流程中，触发器是自动化流程的开端，一个流程只能配置一个触发器，且不能删除。"
                             )}
                         </p>
-                        {!isIE ? (
+                        {/* {!isIE ? (
                             <video
                                 style={{ width: "1160px" }}
                                 autoPlay
@@ -386,7 +386,7 @@ export const GuidePage = () => {
                                     "您的浏览器版本偏低，请升级最新版查看"
                                 )}
                             </div>
-                        )}
+                        )} */}
                     </li>
                     <li>
                         <p>
@@ -401,7 +401,7 @@ export const GuidePage = () => {
                                 "执行操作是指当触发器事件发生后，用于处理数据或传递数据而执行实际的具体操作。比如，在“更新文件后自动通知到相关人员”中，“通知到相关人员”就是具体的执行操作。同一个流程中，您可以设置一个或多个执行操作。"
                             )}
                         </p>
-                        {!isIE ? (
+                        {/* {!isIE ? (
                             <video
                                 style={{ width: "1160px" }}
                                 autoPlay
@@ -421,7 +421,7 @@ export const GuidePage = () => {
                                     "您的浏览器版本偏低，请升级最新版查看"
                                 )}
                             </div>
-                        )}
+                        )} */}
                     </li>
                 </ul>
             </section>
@@ -482,7 +482,7 @@ export const GuidePage = () => {
                                 "需求描述:在知识库发布文件时，需经过领导审核内容，审核通过后，文件发布成功。"
                             )}
                         </p>
-                        {!isIE ? (
+                        {/* {!isIE ? (
                             <video
                                 style={{ width: "1160px" }}
                                 autoPlay
@@ -502,7 +502,7 @@ export const GuidePage = () => {
                                     "您的浏览器版本偏低，请升级最新版查看"
                                 )}
                             </div>
-                        )}
+                        )} */}
                     </li>
                     <li>
                         <p>
@@ -517,7 +517,7 @@ export const GuidePage = () => {
                                 "需求描述：某电商的图片库中存放着大量的拍摄样片，这些样片具有时效性，一旦过季，这些样片需要被下线归档。"
                             )}
                         </p>
-                        {!isIE ? (
+                        {/* {!isIE ? (
                             <video
                                 style={{ width: "1160px" }}
                                 autoPlay
@@ -537,7 +537,7 @@ export const GuidePage = () => {
                                     "您的浏览器版本偏低，请升级最新版查看"
                                 )}
                             </div>
-                        )}
+                        )} */}
                     </li>
                     <li>
                         <p>
@@ -552,7 +552,7 @@ export const GuidePage = () => {
                                 "需求描述：某建筑单位在管理项目文档时，会用 档案分类号+分类描述 的形式，作为文件夹的名称，来创建文件夹的多级结构。在创建好一个文件夹时，期望给文件夹自动设置编目模板，同时将文件夹名称中的「档案分类号」作为编目模板中的某一个字段，填入进去。"
                             )}
                         </p>
-                        {!isIE ? (
+                        {/* {!isIE ? (
                             <video
                                 style={{ width: "1160px" }}
                                 autoPlay
@@ -572,7 +572,7 @@ export const GuidePage = () => {
                                     "您的浏览器版本偏低，请升级最新版查看"
                                 )}
                             </div>
-                        )}
+                        )} */}
                     </li>
                 </ul>
             </section>
