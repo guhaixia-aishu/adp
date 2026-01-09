@@ -150,24 +150,26 @@ var (
 		},
 	}
 
+	KN_CONCEPT_INDEX_VECTOR_PROP = map[string]any{
+		"type":      "knn_vector",
+		"dimension": 768,
+		"method": map[string]any{
+			"name":       "hnsw",
+			"space_type": "cosinesimil",
+			"engine":     "lucene",
+			"parameters": map[string]any{
+				"ef_construction": 256,
+				"m":               48,
+			},
+		},
+	}
+
 	KN_CONCEPT_INDEX_MAPPING = map[string]any{
 		// 通用字段
 		"module_type": map[string]any{
 			"type": "keyword",
 		},
-		"_vector": map[string]any{
-			"type":      "knn_vector",
-			"dimension": 768,
-			"method": map[string]any{
-				"name":       "hnsw",
-				"space_type": "cosinesimil",
-				"engine":     "lucene",
-				"parameters": map[string]any{
-					"ef_construction": 256,
-					"m":               48,
-				},
-			},
-		},
+		"_vector": KN_CONCEPT_INDEX_VECTOR_PROP,
 		"id": map[string]any{
 			"type": "keyword",
 		},

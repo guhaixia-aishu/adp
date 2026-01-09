@@ -1,6 +1,6 @@
 ########################### Stage 0 ########################
-ARG BUILD_IMAGE=acr.aishu.cn/ar/go.build:1.24.11-20251203
-ARG BASE_IMAGE=acr.aishu.cn/public/ubuntu:22.04.20251014
+ARG BUILD_IMAGE=golang:1.24.11
+ARG BASE_IMAGE=ubuntu:24.04
 
 FROM ${BUILD_IMAGE} AS builder
 
@@ -23,11 +23,11 @@ RUN set -ex; \
 # Copy working directory to the actual release docker images
 FROM ${BASE_IMAGE} AS prod
 
-ARG UID=1000
-ARG GID=1000
+ARG UID=1001
+ARG GID=1001
 
-RUN groupadd -r -g $GID anyrobot \
-    && useradd -r -u $UID -g $GID anyrobot
+RUN groupadd -r -g $GID adp \
+    && useradd -r -u $UID -g $GID adp
 
 COPY --from=builder --chown=$UID:$GID /go/src/bin /opt/ontology-manager
 
