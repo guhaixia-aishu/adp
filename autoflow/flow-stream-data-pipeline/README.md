@@ -171,7 +171,7 @@ mq:
   mqHost: kafka-headless.resource.svc.cluster.local.  # Kafka主机
   mqPort: 9097              # Kafka端口
   username: anyrobot        # 用户名
-  password: eisoo.com123    # 密码
+  password: xxxxxx   # 密码
 ```
 
 ### 5.2 Docker 构建

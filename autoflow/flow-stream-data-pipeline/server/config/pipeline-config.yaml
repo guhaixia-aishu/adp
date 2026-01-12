@@ -40,7 +40,7 @@ depServices:
     host: mariadb-mariadb-master.resource.svc.cluster.local.
     port: 3330
     user: root
-    password: eisoo.com123
+    password: xxxxxx
     database: adp
     type: MariaDB
   opensearch:
@@ -48,11 +48,11 @@ depServices:
     port: 9200
     protocol: http
     user: admin
-    password: eisoo.com123
+    password: xxxxxx
   mq:
     auth:
       mechanism: PLAIN
-      password: eisoo.com123
+      password: xxxxxx
       username: anyrobot
     mqHost: kafka-headless.resource.svc.cluster.local.
     mqPort: 9097

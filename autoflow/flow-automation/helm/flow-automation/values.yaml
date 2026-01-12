@@ -145,7 +145,7 @@ depServices:
     host: mongodb-mongodb-0.mongodb-mongodb.resource
     port: 28000
     user: "anyshare"
-    password: "eisoo.com123"
+    password: "xxxxxx"
     replicaSet: "rs0"
     options:
       authSource: "anyshare"
@@ -205,9 +205,9 @@ depServices:
       slaveHost: ""
       slavePort: 26379
       masterGroupName: mymaster
-      password: eisoo.com123
+      password: xxxxxx
       sentinelHost: proton-redis-proton-redis-sentinel.resource
-      sentinelPassword: eisoo.com123
+      sentinelPassword: xxxxxx
       sentinelPort: 26379
       sentinelUsername: root
       username: root
@@ -258,7 +258,7 @@ depServices:
     port: "3330"
     database: "adp"
     user: "anyshare"
-    password: "eisoo.com123"
+    password: "xxxxxx"
     type: "mysql"
   uie:
     privateHost: 127.0.0.1
@@ -315,7 +315,7 @@ depServices:
     port: 9200
     protocol: http
     user: admin
-    password: eisoo.com123
+    password: xxxxxx
   dp_datasource:
     host: data-connection
     port: 8098

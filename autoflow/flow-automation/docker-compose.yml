@@ -30,13 +30,13 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
-    command: redis-server --requirepass eisoo.com123 --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --requirepass xxxxxx --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
     networks:
       - flow-automation-network
     healthcheck:
-      test: [ "CMD", "redis-cli", "-a", "eisoo.com123", "ping" ]
+      test: [ "CMD", "redis-cli", "-a", "xxxxxx", "ping" ]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -49,10 +49,10 @@ services:
     ports:
       - "3330:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: eisoo.com123
+      MYSQL_ROOT_PASSWORD: xxxxxx
       MYSQL_DATABASE: workflow
       MYSQL_USER: anyshare
-      MYSQL_PASSWORD: eisoo.com123
+      MYSQL_PASSWORD: xxxxxx
       MYSQL_CHARACTER_SET_SERVER: utf8mb4
       MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     volumes:

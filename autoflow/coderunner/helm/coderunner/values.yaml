@@ -43,7 +43,7 @@ depServices:
   rds:
     host: mariadb-mariadb-master.resource
     database: adp
-    password: eisoo.com123
+    password: xxxxxx
     port: 3330
     type: MariaDB
     user: anyshare
@@ -81,9 +81,9 @@ depServices:
       slaveHost: ""
       slavePort: 26379
       masterGroupName: mymaster
-      password: eisoo.com123
+      password: xxxxxx
       sentinelHost: proton-redis-proton-redis-sentinel.resource
-      sentinelPassword: eisoo.com123
+      sentinelPassword: xxxxxx
       sentinelPort: 26379
       sentinelUsername: root
       username: root
