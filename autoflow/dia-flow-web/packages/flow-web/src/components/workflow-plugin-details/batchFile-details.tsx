@@ -26,7 +26,7 @@ import { isArray } from "lodash";
 import { efast } from "@applet/api";
 import { BreadCrumbs } from "./bread-crumbs";
 // @ts-ignore
-import { apis, components } from "@dip/components";
+import { apis, components } from '@aishu-tech/components/dist/dip-components.full.js';
 
 export interface BatchFileDetailsProps {
     docids: string | string[];

@@ -8,7 +8,7 @@
     "@applet/api": "workspace:^0.0.1",
     "@applet/common": "workspace:^0.0.1",
     "@applet/icons": "workspace:^0.0.1",
-    "@dip/components": "1.0.0-mission-20250929.4",
+    "@aishu-tech/components": "^1.0.1",
     "@lexical/react": "^0.20.2",
     "@lexical/utils": "^0.20.0",
     "@react-hook/size": "2.1.2",

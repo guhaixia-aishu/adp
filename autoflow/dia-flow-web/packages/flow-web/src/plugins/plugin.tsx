@@ -39,7 +39,8 @@ import TextArea from "antd/lib/input/TextArea";
 import { API } from "@applet/common";
 import { formatDataToQuota } from "../components/params-form/as-quota";
 // @ts-ignore
-import { apis }  from '@dip/components';
+import { apis }  from '@aishu-tech/components/dist/dip-components.full.js';
+import '@aishu-tech/components/dist/dip-components.full.css';
 
 enableES5();
 

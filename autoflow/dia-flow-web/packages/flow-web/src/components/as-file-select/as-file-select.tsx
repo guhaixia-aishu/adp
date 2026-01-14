@@ -15,7 +15,7 @@ import useSWR from "swr";
 import styles from "./as-file-select.module.less";
 import { DocList } from "./doc-list";
 // @ts-ignore
-import { apis } from "@dip/components";
+import { apis } from '@aishu-tech/components/dist/dip-components.full.js';
 import { uniqBy } from "lodash";
 
 export interface DocItem {

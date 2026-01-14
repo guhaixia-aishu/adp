@@ -17,8 +17,8 @@ import { OemConfigProvider } from "../components/oem-provider";
 import { Routes, Route } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 // @ts-ignore
-import { apis } from "@dip/components";
-import "@dip/components/dist/dip-components.full.css";
+import { apis } from '@aishu-tech/components/dist/dip-components.full.js';
+import '@aishu-tech/components/dist/dip-components.full.css';
 import { ExtensionProvider } from "../components/extension-provider";
 import OperatorFlowPanel from "../components/operator-flow/operator-flow-panel";
 

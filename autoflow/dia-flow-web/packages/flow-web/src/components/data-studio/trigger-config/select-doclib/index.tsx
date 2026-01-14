@@ -4,7 +4,7 @@ import { FormItem } from "../../../editor/form-item";
 import { useTranslate } from "@applet/common";
 import { DocLibItem, DocLibList } from "../../../as-file-select/doclib-list";
 // @ts-ignore
-import { apis } from '@dip/components';
+import { apis } from '@aishu-tech/components/dist/dip-components.full.js';
 import { DocLibListNew } from "../../../as-file-select/doclib-list-new";
 import _ from "lodash";
 interface Parameters {
