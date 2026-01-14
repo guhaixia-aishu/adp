@@ -132,6 +132,14 @@ public class CatalogServiceImpl implements CatalogService {
         String type = params.getType();
         BinDataVo binData = params.getBinData();
 
+        //在创建前先判断是否支持的数据源类型
+        try {
+            ConnectorEnums.checkSupportedConnector(type);
+        } catch (IllegalArgumentException e) {
+            // 捕获checkSupportedConnector方法抛出的异常并传递异常信息
+            throw new AiShuException(ErrorCodeEnum.BadRequest, e.getMessage());
+        }
+
         //基本参数校验
         checkDataSourceParam(type, binData);
 
@@ -187,7 +195,7 @@ public class CatalogServiceImpl implements CatalogService {
         } catch (Exception e) {
             if (catalogName != null) {
                 catalogRuleMapper.deleteByCatalogName(catalogName);
-                Calculate.deleteCatalog(serviceEndpoints.getVegaCalculateCoordinator(), catalogName);
+               // Calculate.deleteCatalog(serviceEndpoints.getVegaCalculateCoordinator(), catalogName);
             }
             log.info("新增数据源{},数据库记录写入失败，并删除数据源成功。", params.getName());
             throw new AiShuException(ErrorCodeEnum.InternalServerError, Detail.CREATE_DATASOURCE_FAILED);
@@ -273,6 +281,8 @@ public class CatalogServiceImpl implements CatalogService {
         String typeWithUnderscore = dataSourceVo.getType().replace("-", "_");
         String randomString = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
         String catalogName = typeWithUnderscore + "_" + randomString;
+
+
 //        if (Calculate.getCatalogNameList(serviceEndpoints.getVegaCalculateCoordinator()).contains(catalogName)) {
 //            log.error("数据源已存在catalogName:{}", catalogName);
 //            throw new AiShuException(ErrorCodeEnum.Conflict, Description.CATALOG_EXIST, catalogName, Message.MESSAGE_DATANOTEXIST_ERROR_SOLUTION);
@@ -357,7 +367,12 @@ public class CatalogServiceImpl implements CatalogService {
 
         //基本参数校验
         checkDataSourceParam(type, binData);
-
+        try {
+            ConnectorEnums.checkSupportedConnector(type);
+        } catch (IllegalArgumentException e) {
+            // 捕获checkSupportedConnector方法抛出的异常并传递异常信息
+            throw new AiShuException(ErrorCodeEnum.BadRequest, e.getMessage());
+        }
         //测试连接
         JSONObject result = new JSONObject();
         binData.setPassword(decryptPassword(binData.getPassword()));
@@ -803,6 +818,13 @@ public class CatalogServiceImpl implements CatalogService {
         String type = params.getType();
         BinDataVo binData = params.getBinData();
 
+        try {
+            ConnectorEnums.checkSupportedConnector(type);
+        } catch (IllegalArgumentException e) {
+            // 捕获checkSupportedConnector方法抛出的异常并传递异常信息
+            throw new AiShuException(ErrorCodeEnum.BadRequest, e.getMessage());
+        }
+
         //基本参数校验
         checkDataSourceParam(type, binData);
 
@@ -1086,6 +1108,13 @@ public class CatalogServiceImpl implements CatalogService {
         DataSourceEntity dataSourceEntity = dataSourceMapper.selectById(id);
         if (dataSourceEntity == null) {
             throw new AiShuException(ErrorCodeEnum.BadRequest, Description.DATASOURCE_NOT_EXIST, Detail.ID_NOT_EXISTS, Message.MESSAGE_PARAM_ERROR_SOLUTION);
+        }
+
+        try {
+            ConnectorEnums.checkSupportedConnector(dataSourceEntity.getFType());
+        } catch (IllegalArgumentException e) {
+            // 捕获checkSupportedConnector方法抛出的异常并传递异常信息
+            throw new AiShuException(ErrorCodeEnum.BadRequest, e.getMessage());
         }
 
         // 内置数据源不能删除
