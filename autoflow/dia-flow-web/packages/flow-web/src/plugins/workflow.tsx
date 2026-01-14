@@ -14,8 +14,8 @@ import viVN from "../locales/vi-vn.json";
 import "../index.less";
 import { message } from "antd";
 // @ts-ignore
-import { apis } from "@dip/components";
-import "@dip/components/dist/dip-components.full.css";
+import { apis } from '@aishu-tech/components/dist/dip-components.full.js';
+import '@aishu-tech/components/dist/dip-components.full.css';
 import App from "../App";
 enableES5();
 

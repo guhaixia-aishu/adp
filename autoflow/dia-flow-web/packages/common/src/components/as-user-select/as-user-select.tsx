@@ -4,7 +4,7 @@ import React, { useContext, useLayoutEffect, useState } from "react";
 import { TranslateFn, useEvent, useTranslate } from "../../hooks";
 import { MicroAppContext } from "../micro-app";
 // @ts-ignore
-import { apis, components } from "@dip/components";
+import { apis, components } from '@aishu-tech/components/dist/dip-components.full.js';
 import { getRoleByUserInfo } from "../../utils/roles";
 
 export interface DepItem {

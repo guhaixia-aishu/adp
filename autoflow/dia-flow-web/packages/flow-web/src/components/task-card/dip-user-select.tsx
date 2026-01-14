@@ -2,7 +2,7 @@ import { MicroAppContext, TranslateFn, useEvent, useTranslate } from "@applet/co
 import { Button, Space, Tag } from "antd";
 import { clamp } from "lodash";
 // @ts-ignore
-import { apis, components } from "@dip/components";
+import { apis, components } from '@aishu-tech/components/dist/dip-components.full.js';
 import React, { useContext, useLayoutEffect, useState } from "react";
 import { getRoleByUserInfo } from "../../utils/roles";
 import _ from "lodash";

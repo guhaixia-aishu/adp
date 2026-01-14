@@ -12,9 +12,6 @@
         "lib",
         "es"
     ],
-    "publishConfig": {
-        "registry": "http://repository.aishu.cn:8081/repository/npm-all/"
-    },
     "scripts": {
         "clean": "rimraf es lib",
         "build:es": "tsc && copyfiles -u 1 \"src/**/*.less\" src/locales es",
@@ -28,7 +25,7 @@
         "@applet/api": "workspace:*",
         "@applet/common": "workspace:*",
         "@applet/icons": "workspace:*",
-        "@dip/components": "1.0.0-mission-20250929.4",
+        "@aishu-tech/components": "^1.0.1",
         "@testing-library/jest-dom": "5.14.1",
         "@testing-library/react": "12.1.5",
         "@testing-library/user-event": "13.2.1",

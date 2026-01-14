@@ -15,7 +15,7 @@ import { useTranslate } from "../../hooks";
 import { MicroAppContext } from "../micro-app";
 import styles from "./as-file-select.module.less";
 // @ts-ignore
-import { apis } from "@dip/components";
+import { apis } from '@aishu-tech/components/dist/dip-components.full.js';
 
 export interface DocItem {
   id: string;

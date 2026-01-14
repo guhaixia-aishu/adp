@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef } from "react";
 import { MicroAppContext } from "@applet/common";
 import { cloneDeep } from "lodash";
 // @ts-ignore
-import { apis, components } from '@dip/components';
+import { apis, components } from '@aishu-tech/components/dist/dip-components.full.js';
 
 export default function AuditAgency({}) {
   const { microWidgetProps } = useContext(MicroAppContext);
