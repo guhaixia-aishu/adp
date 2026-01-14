@@ -21,8 +21,8 @@ import { BrowserRouter } from "react-router-dom";
 import { DataStudioProvider } from "../components/data-studio/data-studio-provider";
 import { message, Modal } from "antd";
 // @ts-ignore
-import { apis }  from '@dip/components';
-import '@dip/components/dist/dip-components.full.css'; 
+import { apis }  from '@aishu-tech/components/dist/dip-components.full.js';
+import '@aishu-tech/components/dist/dip-components.full.css';
 import { DataStudioIndex } from "../components/data-studio";
 
 enableES5();
