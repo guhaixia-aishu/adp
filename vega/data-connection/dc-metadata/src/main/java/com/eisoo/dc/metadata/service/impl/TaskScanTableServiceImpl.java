@@ -9,6 +9,7 @@ import com.eisoo.dc.common.metadata.entity.TaskScanTableEntity;
 import com.eisoo.dc.common.metadata.mapper.DataSourceMapper;
 import com.eisoo.dc.common.metadata.mapper.TableScanMapper;
 import com.eisoo.dc.common.metadata.mapper.TaskScanTableMapper;
+import com.eisoo.dc.common.util.CommonUtil;
 import com.eisoo.dc.metadata.service.ITableScanService;
 import com.eisoo.dc.metadata.service.ITaskScanTableService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,8 @@ public class TaskScanTableServiceImpl extends ServiceImpl<TaskScanTableMapper, T
         String fType = dataSourceEntity.getFType();
         if (ConnectorEnums.OPENSEARCH.getConnector().equalsIgnoreCase(fType)) {
             fSchema = "default";
+        }else if (CommonUtil.isEmpty(fSchema)) {
+            fSchema = dataSourceEntity.getFDatabase();
         }
         List<TaskScanTableEntity> data = new ArrayList<>(tables.size());
         for (String tableId : tables) {
