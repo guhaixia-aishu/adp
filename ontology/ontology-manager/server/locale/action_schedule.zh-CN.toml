@@ -1,0 +1,31 @@
+# Action Schedule Error Messages (Chinese)
+
+[OntologyManager.ActionSchedule.InvalidParameter]
+text = "参数无效"
+
+[OntologyManager.ActionSchedule.InvalidCronExpression]
+text = "Cron表达式无效"
+
+[OntologyManager.ActionSchedule.InvalidStatus]
+text = "状态值无效"
+
+[OntologyManager.ActionSchedule.ActionTypeNotFound]
+text = "行动类不存在"
+
+[OntologyManager.ActionSchedule.NotFound]
+text = "行动计划不存在"
+
+[OntologyManager.ActionSchedule.CreateFailed]
+text = "创建行动计划失败"
+
+[OntologyManager.ActionSchedule.UpdateFailed]
+text = "更新行动计划失败"
+
+[OntologyManager.ActionSchedule.DeleteFailed]
+text = "删除行动计划失败"
+
+[OntologyManager.ActionSchedule.GetFailed]
+text = "获取行动计划失败"
+
+[OntologyManager.ActionSchedule.GetActionTypeFailed]
+text = "获取行动类失败"

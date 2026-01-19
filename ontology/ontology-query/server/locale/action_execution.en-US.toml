@@ -1,0 +1,45 @@
+# Action Execution
+[OntologyQuery.ActionExecution.InvalidParameter]
+Description = "Invalid Request Parameter"
+Solution = "Please check whether the parameter is correct."
+ErrorLink = "None"
+
+[OntologyQuery.ActionExecution.ActionTypeNotFound]
+Description = "The Action Type Does Not Exist"
+Solution = "Please check if the action type ID is correct."
+ErrorLink = "None"
+
+[OntologyQuery.ActionExecution.ExecutionNotFound]
+Description = "The Execution Record Does Not Exist"
+Solution = "Please check if the execution ID is correct."
+ErrorLink = "None"
+
+[OntologyQuery.ActionExecution.DuplicateExecution]
+Description = "Duplicate Execution Detected"
+Solution = "An execution for this action is already in progress. Please wait for it to complete."
+ErrorLink = "None"
+
+[OntologyQuery.ActionExecution.GetActionTypeFailed]
+Description = "Failed to Get Action Type"
+Solution = "Please try again. If the error occurs again, please submit the work order or contact technical support."
+ErrorLink = "None"
+
+[OntologyQuery.ActionExecution.CreateExecutionFailed]
+Description = "Failed to Create Execution Record"
+Solution = "Please try again. If the error occurs again, please submit the work order or contact technical support."
+ErrorLink = "None"
+
+[OntologyQuery.ActionExecution.ExecuteToolFailed]
+Description = "Tool Execution Failed"
+Solution = "Please check the tool configuration and try again."
+ErrorLink = "None"
+
+[OntologyQuery.ActionExecution.ExecuteMCPFailed]
+Description = "MCP Execution Failed"
+Solution = "Please check the MCP configuration and try again."
+ErrorLink = "None"
+
+[OntologyQuery.ActionExecution.QueryExecutionsFailed]
+Description = "Failed to Query Execution Logs"
+Solution = "Please try again. If the error occurs again, please submit the work order or contact technical support."
+ErrorLink = "None"

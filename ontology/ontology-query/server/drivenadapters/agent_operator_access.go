@@ -194,3 +194,78 @@ func (aoa *agentOperatorAccess) ExecuteOperator(ctx context.Context, agentOperat
 		return nil, fmt.Errorf("execute operator failed: %v", string(resByte))
 	}
 }
+
+// ExecuteMCP executes an MCP-based action through agent-operator-integration
+func (aoa *agentOperatorAccess) ExecuteMCP(ctx context.Context, mcpID string,
+	toolName string, execRequest interfaces.MCPExecutionRequest) (any, error) {
+
+	var (
+		respCode int
+		result   []byte
+		err      error
+	)
+
+	accountInfo := interfaces.AccountInfo{}
+	if ctx.Value(interfaces.ACCOUNT_INFO_KEY) != nil {
+		accountInfo = ctx.Value(interfaces.ACCOUNT_INFO_KEY).(interfaces.AccountInfo)
+	}
+
+	headers := map[string]string{
+		interfaces.CONTENT_TYPE_NAME:        interfaces.CONTENT_TYPE_JSON,
+		interfaces.HTTP_HEADER_ACCOUNT_ID:   accountInfo.ID,
+		interfaces.HTTP_HEADER_ACCOUNT_TYPE: accountInfo.Type,
+	}
+
+	// http://{host}:{port}/api/agent-operator-integration/internal-v1/mcp/{mcp_id}/tools/{tool_name}/execute
+	url := fmt.Sprintf("%s/mcp/%s/tools/%s/execute", aoa.agentOperatorUrl, mcpID, toolName)
+
+	start := time.Now().UnixMilli()
+	respCode, result, err = aoa.httpClient.PostNoUnmarshal(ctx, url, headers, execRequest)
+	logger.Debugf("post [%s] with headers[%v] finished, request is [%v] response code is [%d], error is [%v], 耗时: %dms",
+		url, headers, execRequest, respCode, err, time.Now().UnixMilli()-start)
+
+	mcpResult := operatorExecuteResult{}
+
+	if err != nil {
+		logger.Errorf("MCP execution request failed: %v", err)
+		return mcpResult, fmt.Errorf("MCP execution request failed: %v", err)
+	}
+
+	if respCode != http.StatusOK {
+		var opError OperatorError
+		if err = json.Unmarshal(result, &opError); err != nil {
+			logger.Errorf("unmarshal OperatorError failed: %v\n", err)
+			return mcpResult, err
+		}
+		httpErr := &rest.HTTPError{HTTPCode: respCode,
+			BaseError: rest.BaseError{
+				ErrorCode:    opError.Code,
+				Description:  opError.Description,
+				ErrorDetails: opError.Detail,
+			}}
+		logger.Errorf("MCP execution failed: %v", httpErr.Error())
+		return mcpResult, fmt.Errorf("execute MCP %s/%s return error %v", mcpID, toolName, httpErr.Error())
+	}
+
+	if result == nil {
+		return mcpResult, fmt.Errorf("execute MCP %s/%s return null", mcpID, toolName)
+	}
+
+	if err := json.Unmarshal(result, &mcpResult); err != nil {
+		logger.Errorf("Unmarshal MCP execution result failed, %s", err)
+		return mcpResult, err
+	}
+
+	// status_code 在100-300间才算成功
+	if http.StatusContinue <= mcpResult.StatusCode &&
+		mcpResult.StatusCode < http.StatusMultipleChoices {
+		return mcpResult.Body, nil
+	} else {
+		resByte, err := json.Marshal(mcpResult)
+		if err != nil {
+			logger.Errorf("marshal MCP result failed: %v\n", err)
+			return mcpResult, err
+		}
+		return nil, fmt.Errorf("execute MCP failed: %v", string(resByte))
+	}
+}

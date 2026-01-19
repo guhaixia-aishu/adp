@@ -1,0 +1,31 @@
+# Action Schedule Error Messages (English)
+
+[OntologyManager.ActionSchedule.InvalidParameter]
+text = "Invalid parameter"
+
+[OntologyManager.ActionSchedule.InvalidCronExpression]
+text = "Invalid cron expression"
+
+[OntologyManager.ActionSchedule.InvalidStatus]
+text = "Invalid status value"
+
+[OntologyManager.ActionSchedule.ActionTypeNotFound]
+text = "Action type not found"
+
+[OntologyManager.ActionSchedule.NotFound]
+text = "Action schedule not found"
+
+[OntologyManager.ActionSchedule.CreateFailed]
+text = "Failed to create action schedule"
+
+[OntologyManager.ActionSchedule.UpdateFailed]
+text = "Failed to update action schedule"
+
+[OntologyManager.ActionSchedule.DeleteFailed]
+text = "Failed to delete action schedule"
+
+[OntologyManager.ActionSchedule.GetFailed]
+text = "Failed to get action schedule"
+
+[OntologyManager.ActionSchedule.GetActionTypeFailed]
+text = "Failed to get action type"

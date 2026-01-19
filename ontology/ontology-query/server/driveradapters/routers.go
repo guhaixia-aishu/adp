@@ -14,6 +14,8 @@ import (
 	"ontology-query/common"
 	oerrors "ontology-query/errors"
 	"ontology-query/interfaces"
+	"ontology-query/logics/action_logs"
+	"ontology-query/logics/action_scheduler"
 	"ontology-query/logics/action_type"
 	"ontology-query/logics/knowledge_network"
 	"ontology-query/logics/object_type"
@@ -31,6 +33,8 @@ type restHandler struct {
 	ats interfaces.ActionTypeService
 	kns interfaces.KnowledgeNetworkService
 	ots interfaces.ObjectTypeService
+	ass interfaces.ActionSchedulerService
+	als interfaces.ActionLogsService
 }
 
 func NewRestHandler(appSetting *common.AppSetting) RestHandler {
@@ -40,6 +44,8 @@ func NewRestHandler(appSetting *common.AppSetting) RestHandler {
 		kns:        knowledge_network.NewKnowledgeNetworkService(appSetting),
 		ats:        action_type.NewActionTypeService(appSetting),
 		ots:        object_type.NewObjectTypeService(appSetting),
+		ass:        action_scheduler.NewActionSchedulerService(appSetting),
+		als:        action_logs.NewActionLogsService(appSetting),
 	}
 	return r
 }
@@ -57,6 +63,12 @@ func (r *restHandler) RegisterPublic(c *gin.Engine) {
 		// 基于起点、方向和路径长度获取对象子图
 		apiV1.POST("/knowledge-networks/:kn_id/subgraph", r.verifyJsonContentTypeMiddleWare(), r.GetObjectsSubgraphByEx)
 		apiV1.POST("/knowledge-networks/:kn_id/action-types/:at_id", r.verifyJsonContentTypeMiddleWare(), r.GetActionsInActionTypeByEx)
+
+		// 行动执行相关 API
+		apiV1.POST("/knowledge-networks/:kn_id/action-types/:at_id/execute", r.verifyJsonContentTypeMiddleWare(), r.ExecuteActionByEx)
+		apiV1.GET("/knowledge-networks/:kn_id/action-executions/:execution_id", r.GetActionExecutionByEx)
+		apiV1.POST("/knowledge-networks/:kn_id/action-logs", r.verifyJsonContentTypeMiddleWare(), r.QueryActionLogsOverrideByEx)
+		apiV1.GET("/knowledge-networks/:kn_id/action-logs/:log_id", r.GetActionLogByEx)
 	}
 
 	apiInV1 := c.Group("/api/ontology-query/in/v1")
@@ -67,6 +79,12 @@ func (r *restHandler) RegisterPublic(c *gin.Engine) {
 		// 基于起点、方向和路径长度获取对象子图
 		apiInV1.POST("/knowledge-networks/:kn_id/subgraph", r.verifyJsonContentTypeMiddleWare(), r.GetObjectsSubgraphByIn)
 		apiInV1.POST("/knowledge-networks/:kn_id/action-types/:at_id", r.verifyJsonContentTypeMiddleWare(), r.GetActionsInActionTypeByIn)
+
+		// 行动执行相关 API (内部)
+		apiInV1.POST("/knowledge-networks/:kn_id/action-types/:at_id/execute", r.verifyJsonContentTypeMiddleWare(), r.ExecuteActionByIn)
+		apiInV1.GET("/knowledge-networks/:kn_id/action-executions/:execution_id", r.GetActionExecutionByIn)
+		apiInV1.POST("/knowledge-networks/:kn_id/action-logs", r.verifyJsonContentTypeMiddleWare(), r.QueryActionLogsOverrideByIn)
+		apiInV1.GET("/knowledge-networks/:kn_id/action-logs/:log_id", r.GetActionLogByIn)
 	}
 
 	logger.Info("RestHandler RegisterPublic")

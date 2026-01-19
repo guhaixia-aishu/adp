@@ -30,6 +30,9 @@ type ServerSetting struct {
 	DefaultSmallModelEnabled bool          `mapstructure:"defaultSmallModelEnabled"`
 	JobMaxRetryTimes         int           `mapstructure:"jobMaxRetryTimes"`
 	ReloadJobEnabled         bool          `mapstructure:"reloadJobEnabled"`
+	// Schedule worker settings
+	SchedulePollInterval int `mapstructure:"schedulePollInterval"` // in seconds, default 10
+	ScheduleLockTimeout  int `mapstructure:"scheduleLockTimeout"`  // in seconds, default 300 (5 min)
 }
 
 // app配置项
@@ -61,6 +64,8 @@ type AppSetting struct {
 	ModelFactoryAPIUrl string
 	// business system url
 	BusinessSystemUrl string
+	// ontology query url
+	OntologyQueryUrl string
 }
 
 const (
@@ -81,6 +86,7 @@ const (
 	dataViewServiceName            string = "data-model"
 	uniQueryServiceName            string = "uniquery"
 	businessSystemServiceName      string = "business-system"
+	ontologyQueryServiceName       string = "ontology-query"
 
 	DATA_BASE_NAME string = "adp"
 )
@@ -157,6 +163,8 @@ func loadSetting(vp *viper.Viper) {
 	SetModelFactoryAPISetting()
 
 	SetBusinessSystemSetting()
+
+	SetOntologyQuerySetting()
 
 	serverInfo := o11y.ServerInfo{
 		ServerName:    version.ServerName,
@@ -342,4 +350,20 @@ func SetBusinessSystemSetting() {
 	port := setting["port"].(int)
 
 	appSetting.BusinessSystemUrl = fmt.Sprintf("%s://%s:%d/internal/api/business-system/v1", protocol, host, port)
+}
+
+func SetOntologyQuerySetting() {
+	setting, ok := appSetting.DepServices[ontologyQueryServiceName]
+	if !ok {
+		// Optional service, default to localhost for development
+		logger.Warnf("service %s not found in depServices, using default", ontologyQueryServiceName)
+		appSetting.OntologyQueryUrl = "http://localhost:8080"
+		return
+	}
+
+	protocol := setting["protocol"].(string)
+	host := setting["host"].(string)
+	port := setting["port"].(int)
+
+	appSetting.OntologyQueryUrl = fmt.Sprintf("%s://%s:%d", protocol, host, port)
 }

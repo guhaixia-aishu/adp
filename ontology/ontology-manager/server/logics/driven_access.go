@@ -8,6 +8,7 @@ import (
 
 var (
 	DB  *sql.DB
+	ASA interfaces.ActionScheduleAccess
 	ATA interfaces.ActionTypeAccess
 	BSA interfaces.BusinessSystemAccess
 	CGA interfaces.ConceptGroupAccess
@@ -65,6 +66,10 @@ func SetPermissionAccess(pa interfaces.PermissionAccess) {
 
 func SetRelationTypeAccess(rta interfaces.RelationTypeAccess) {
 	RTA = rta
+}
+
+func SetActionScheduleAccess(asa interfaces.ActionScheduleAccess) {
+	ASA = asa
 }
 
 func SetActionTypeAccess(ata interfaces.ActionTypeAccess) {

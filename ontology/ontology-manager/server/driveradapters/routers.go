@@ -16,6 +16,7 @@ import (
 	"ontology-manager/common"
 	oerrors "ontology-manager/errors"
 	"ontology-manager/interfaces"
+	"ontology-manager/logics/action_schedule"
 	"ontology-manager/logics/action_type"
 	"ontology-manager/logics/concept_group"
 	"ontology-manager/logics/job"
@@ -32,6 +33,7 @@ type RestHandler interface {
 type restHandler struct {
 	appSetting *common.AppSetting
 	hydra      rest.Hydra
+	ass        interfaces.ActionScheduleService
 	ats        interfaces.ActionTypeService
 	cgs        interfaces.ConceptGroupService
 	js         interfaces.JobService
@@ -44,6 +46,7 @@ func NewRestHandler(appSetting *common.AppSetting) RestHandler {
 	r := &restHandler{
 		appSetting: appSetting,
 		hydra:      rest.NewHydra(appSetting.HydraAdminSetting),
+		ass:        action_schedule.NewActionScheduleService(appSetting),
 		ats:        action_type.NewActionTypeService(appSetting),
 		cgs:        concept_group.NewConceptGroupService(appSetting),
 		js:         job.NewJobService(appSetting),
@@ -106,6 +109,14 @@ func (r *restHandler) RegisterPublic(c *gin.Engine) {
 		apiV1.DELETE("/knowledge-networks/:kn_id/jobs/:job_ids", r.DeleteJobs)
 		apiV1.GET("/knowledge-networks/:kn_id/jobs", r.ListJobs)
 		apiV1.GET("/knowledge-networks/:kn_id/jobs/:job_id/tasks", r.ListTasks)
+
+		// 行动计划管理
+		apiV1.POST("/knowledge-networks/:kn_id/action-schedules", r.verifyJsonContentTypeMiddleWare(), r.CreateActionSchedule)
+		apiV1.DELETE("/knowledge-networks/:kn_id/action-schedules/:schedule_ids", r.DeleteActionSchedules)
+		apiV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionSchedule)
+		apiV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id/status", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleStatus)
+		apiV1.GET("/knowledge-networks/:kn_id/action-schedules", r.ListActionSchedules)
+		apiV1.GET("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.GetActionSchedule)
 
 		// 业务知识网络资源示例列表
 		apiV1.GET("/resources", r.ListResources)
