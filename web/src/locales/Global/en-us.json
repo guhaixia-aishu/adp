@@ -203,6 +203,10 @@
     "selectSheetButton": "Select Sheet",
     "selectCellRange": "Please select cell range",
     "scanStatus": "Scan Status",
+    "taskType": "Task Type",
+    "taskStatus": "Task Status",
+    "scheduleScan": "Scheduled Scan",
+    "immediateScan": "Immediate Scan",
     "connectionManagement": "Connection Management",
     "scanManagement": "Scan Management",
     "operationUser": "Operator",
@@ -278,6 +282,9 @@
     "bindObjectType": "Bound Object Class",
     "sourceObjectType": "Source Object Class",
     "targetObjectType": "Target Object Class",
-    "removeSuccess": "Removed successfully"
+    "removeSuccess": "Removed successfully",
+    "click": "Click",
+    "createBtn": "「Create」",
+    "alreadyExists": "Already Exists"
   }
 }
