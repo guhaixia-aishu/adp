@@ -308,7 +308,7 @@ const DataSource = (props: DataSourceProps): JSX.Element => {
           { key: 'view', label: intl.get('Global.view'), visible: matchPermission(PERMISSION_CODES.VIEW, record.operations) },
           {
             key: 'scan',
-            label: intl.get('DataConnect.scan'),
+            label: intl.get('Global.scan'),
             visible: record.type != 'excel' && matchPermission(PERMISSION_CODES.SACN, record.operations),
           },
           {
