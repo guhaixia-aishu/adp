@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
+	libstore "devops.aishu.cn/AISHUDevOps/DIP/_git/ide-go-lib/store"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/common"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/drivenadapters"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/entity"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/utils/extractor"
-	store "github.com/kweaver-ai/adp/autoflow/ide-go-lib/store"
 	traceLog "github.com/kweaver-ai/adp/autoflow/ide-go-lib/telemetry/log"
 	"github.com/kweaver-ai/adp/autoflow/ide-go-lib/telemetry/trace"
 )
@@ -345,7 +345,7 @@ func (a *ContentEntity) Run(ctx entity.ExecuteContext, input interface{}, token 
 		if res.Status == "processing" {
 			taskBlockKey := fmt.Sprintf("%s%s", entity.ContentEntityKeyPrefix, docID)
 
-			redis := store.NewRedis()
+			redis := libstore.NewRedis()
 			client := redis.GetClient()
 			err = client.HSet(ctx.Context(), taskBlockKey, taskIns.ID, "").Err()
 			bytes, _ := json.Marshal(subdocParams)
@@ -435,24 +435,73 @@ func (a *ContentFileParse) Run(ctx entity.ExecuteContext, params interface{}, to
 	defer func() { trace.TelemetrySpanEnd(span, err) }()
 	ctx.SetContext(newCtx)
 	ctx.Trace(newCtx, "run start", entity.TraceOpPersistAfterAction)
-	log := traceLog.WithContext(ctx.Context())
 
 	input := params.(*ContentFileParse)
 
 	err = input.Validate(ctx.Context())
-
 	if err != nil {
-		log.Warnf("[ContentFileParse] validate err: %s")
+		traceLog.WithContext(ctx.Context()).Warnf("[ContentFileParse] validate err: %s", err.Error())
 		return nil, err
 	}
+
+	// 创建执行器包装器
+	executor := &contentFileParseExecutor{
+		action:  a,
+		input:   input,
+		token:   token,
+		context: ctx,
+	}
+
+	// 使用通用的异步任务缓存管理器（使用统一的 topic）
+	manager := NewAsyncTaskManager(ctx.NewExecuteMethods()).
+		WithLockPrefix("automation:file_parse")
+
+	return manager.Run(ctx, executor)
+}
+
+func (a *ContentFileParse) RunAfter(ctx entity.ExecuteContext, _ interface{}) (entity.TaskInstanceStatus, error) {
+	manager := NewAsyncTaskManager(ctx.NewExecuteMethods())
+	return manager.RunAfter(ctx)
+}
+
+// contentFileParseExecutor 实现 AsyncTaskExecutor 接口
+type contentFileParseExecutor struct {
+	action  *ContentFileParse
+	input   *ContentFileParse
+	token   *entity.Token
+	context entity.ExecuteContext
+}
+
+func (e *contentFileParseExecutor) GetTaskType() string {
+	return e.action.Name()
+}
+
+func (e *contentFileParseExecutor) GetHashContent() string {
+	if e.input.SourceType == SourceTypeDocID {
+		return fmt.Sprintf("%s:%s:%s:%s:%s:%s", e.action.Name(), e.input.SourceType, e.input.DocID, e.input.Version, e.input.Model, e.input.SliceVector)
+	}
+	return fmt.Sprintf("%s:%s:%s:%s:%s", e.action.Name(), e.input.SourceType, e.input.Url, e.input.Model, e.input.SliceVector)
+}
+
+func (e *contentFileParseExecutor) GetExpireSeconds() int64 {
+	config := common.NewConfig()
+	return config.ActionConfig.FileParse.ExpireSec
+}
+
+func (e *contentFileParseExecutor) GetResultFileExt() string {
+	return ".json"
+}
+
+func (e *contentFileParseExecutor) Execute(ctx context.Context) (map[string]interface{}, error) {
+	log := traceLog.WithContext(ctx)
 
 	structureExtractor := drivenadapters.NewStructureExtractor()
 	result := make(map[string]any)
 
-	parseResult, contentList, err := structureExtractor.FileParse(ctx.Context(), input.Url, input.Filename)
+	parseResult, contentList, err := structureExtractor.FileParse(ctx, e.input.Url, e.input.Filename)
 
 	if err != nil {
-		log.Warnf("[ContentFileParse] FileParse err: %s, url %s, docid %s", input.Url, input.DocID)
+		log.Warnf("[contentFileParseExecutor] FileParse err: %s, url %s", err.Error(), e.input.Url)
 		return nil, err
 	}
 
@@ -467,21 +516,21 @@ func (a *ContentFileParse) Run(ctx entity.ExecuteContext, params interface{}, to
 		// 将 contentList 转换为 Element 格式的 content_list
 		var elements []*extractor.Element
 		if len(contentList) > 0 {
-			documentID := input.DocID
+			documentID := e.input.DocID
 			if documentID == "" {
 				// 如果 DocID 为空，使用文件名生成一个临时 ID
-				documentID = fmt.Sprintf("doc_%s", strings.ReplaceAll(input.Filename, ".", "_"))
+				documentID = fmt.Sprintf("doc_%s", strings.ReplaceAll(e.input.Filename, ".", "_"))
 			}
 			// 获取文档名称（去掉后缀）
-			docName := input.Filename
+			docName := e.input.Filename
 			if docName == "" {
 				docName = documentID
 			}
-			elements = extractor.ConvertContentItemsToElements(ctx.Context(), contentList, documentID, docName, docMD5)
+			elements = extractor.ConvertContentItemsToElements(ctx, contentList, documentID, docName, docMD5)
 			// 将 Element 数组序列化为 JSON
 			bytes, err := json.Marshal(elements)
 			if err != nil {
-				log.Warnf("[ContentFileParse] Marshal elements err: %v", err)
+				log.Warnf("[contentFileParseExecutor] Marshal elements err: %v", err)
 				// 如果序列化失败，回退到原始 contentList
 				bytes, _ := json.Marshal(contentList)
 				_ = json.Unmarshal(bytes, &contentSlice)
@@ -492,10 +541,10 @@ func (a *ContentFileParse) Run(ctx entity.ExecuteContext, params interface{}, to
 
 		// 处理 chunks - 直接使用 contentList
 		// 注意：Chunk 的父子关系通过 SegmentID 关联到 Element 层获取
-		if input.SliceVector == SliceVectorSlice || input.SliceVector == SliceVectorBoth {
+		if e.input.SliceVector == SliceVectorSlice || e.input.SliceVector == SliceVectorBoth {
 			if len(contentList) > 0 {
 				// 传入 elements 列表以建立 Chunk 与 Element 的关联关系
-				customChunks := extractor.ProcessCustomChunk(ctx.Context(), input.Filename, contentList, docMD5, input.SliceVector == SliceVectorBoth, input.Model, token.Token, elements)
+				customChunks := extractor.ProcessCustomChunk(ctx, e.input.Filename, contentList, docMD5, e.input.SliceVector == SliceVectorBoth, e.input.Model, e.token.Token, elements)
 
 				bytes, _ := json.Marshal(customChunks)
 				_ = json.Unmarshal(bytes, &chunks)
@@ -506,8 +555,6 @@ func (a *ContentFileParse) Run(ctx entity.ExecuteContext, params interface{}, to
 		result["content_list"] = contentSlice
 		result["chunks"] = chunks
 	}
-
-	ctx.ShareData().Set(ctx.GetTaskID(), result)
 
 	return result, nil
 }
