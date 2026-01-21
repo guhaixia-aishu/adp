@@ -1,0 +1,43 @@
+ARG BASE_IMAGE=acr.aishu.cn/public/ubuntu:22.04.20251014
+FROM ${BASE_IMAGE}
+
+RUN mkdir -p /opt \
+    && groupadd -g 5000 -f autoflow \
+    && useradd autoflow -u 5000 -g 5000 -m -s /bin/bash \
+    && mkdir -p /opt/flow-automation \
+    && mkdir -p /opt/pipeline \
+    && mkdir -p /opt/ecron-management \
+    && mkdir -p /opt/ecron-analysis \
+    && chown -R autoflow:autoflow /opt
+
+# flow-automation
+# COPY ./build/automation /opt/flow-automation/automation
+# COPY ./flow-automation/schema /opt/flow-automation/schema
+# COPY ./flow-automation/resource /opt/flow-automation/resource
+
+# # ecron
+# COPY ./build/ecron-management /opt/ecron-management/ecron-management
+# COPY ./build/ecron-analysis /opt/ecron-analysis/ecron-analysis
+
+# # flow-stream-data-pipeline
+# COPY ./build/pipeline-mgnt-server /opt/pipeline/pipeline-mgnt-server
+# COPY ./build/pipeline-worker-server /opt/pipeline/pipeline-worker-server
+# COPY ./flow-stream-data-pipeline/server/config/pipeline-config.yaml /opt/pipeline/config
+# ADD ./flow-stream-data-pipeline/server/locale/*toml /opt/pipeline/locale/
+
+COPY flow-automation/ /opt/flow-automation/
+COPY ecron-management/ /opt/ecron-management/
+COPY ecron-analysis/ /opt/ecron-analysis/
+COPY pipeline/ /opt/pipeline/
+
+RUN chmod +x /opt/flow-automation/flow-automation \
+    && chmod +x /opt/ecron-management/ecron-management \
+    && chmod +x /opt/ecron-analysis/ecron-analysis \
+    && chmod +x /opt/pipeline/pipeline-mgmt-server \
+    && chmod +x /opt/pipeline/pipeline-worker-server
+
+USER autoflow
+
+WORKDIR /opt/
+
+CMD ["sleep", "infinity"]
