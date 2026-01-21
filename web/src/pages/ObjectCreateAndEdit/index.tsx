@@ -26,6 +26,7 @@ const ObjectCreateAndEdit = () => {
 
   const [loading, setLoading] = useState(false);
   const [stepsCurrent, setStepsCurrent] = useState(0);
+  const [doneStep, setDoneStep] = useState(0);
   const [basicValue, setBasicValue] = useState<OntologyObjectType.BasicInfo>();
   const [dataSource, setDataSource] = useState<OntologyObjectType.DataSource>();
   const [dataProperties, setDataProperties] = useState<OntologyObjectType.DataProperty[]>([]);
@@ -107,6 +108,7 @@ const ObjectCreateAndEdit = () => {
       setPrimaryKeys(primary_keys);
       setDisplayKey(display_key);
       setIncrementalKey(incremental_key);
+      setDoneStep(2);
     } catch (error) {
       console.error('getObjectDetail error:', error);
     }
@@ -114,7 +116,10 @@ const ObjectCreateAndEdit = () => {
 
   const goBack = () => history.goBack();
   const onPrev = () => setStepsCurrent((prev) => prev - 1);
-  const onNext = () => setStepsCurrent((prev) => prev + 1);
+  const onNext = () => {
+    setDoneStep((prev) => prev + 1);
+    setStepsCurrent((prev) => prev + 1);
+  };
 
   const onSubmit = useCallback(
     async (data: { logicProperties: OntologyObjectType.LogicProperty[] }) => {
@@ -281,9 +286,15 @@ const ObjectCreateAndEdit = () => {
     saveClick?: () => void;
   };
 
+  const handleStepChange = (current: number) => {
+    if (current <= doneStep) {
+      setStepsCurrent(current);
+    }
+  };
+
   return (
     <div className={styles['object-root']}>
-      <HeaderSteps title={title} stepsCurrent={stepsCurrent} items={steps} />
+      <HeaderSteps title={title} stepsCurrent={stepsCurrent} items={steps} onStepChange={handleStepChange} />
       <div className={styles['object-header-actions']}>
         {currentStep?.prevClick && (
           <Button onClick={currentStep.prevClick} loading={loading} disabled={loading}>

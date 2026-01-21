@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import intl from 'react-intl-universal';
 import { EllipsisOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { Handle, Position } from '@xyflow/react';
-import { Dropdown, Input } from 'antd';
+import { Dropdown, Input, Tooltip } from 'antd';
 import FieldTypeIcon from '@/components/FieldTypeIcon';
 import ObjectIcon from '@/components/ObjectIcon';
 import * as OntologyObjectType from '@/services/object/type';
@@ -47,7 +47,7 @@ const CustomNode = ({ data, id }: OntologyObjectType.TNode) => {
       <div className={styles['panel-header']}>
         <div className={styles['panel-title-box']}>
           {id === 'data' ? (
-            <ObjectIcon icon={data.icon} color={data.bg} size={24} iconSize={16} />
+            <ObjectIcon icon={data.icon} color={data.bg} size={20} iconSize={16} />
           ) : (
             <IconFont type={data.icon} style={{ color: '#000', fontSize: '20px' }} />
           )}
@@ -59,10 +59,13 @@ const CustomNode = ({ data, id }: OntologyObjectType.TNode) => {
             <>
               {data.attributes.length > 0 ? (
                 <>
-                  <Button.Icon icon={<IconFont type="icon-dip-pickup" />} onClick={() => data.pickAttribute?.()} />
-                  <Button.Icon icon={<IconFont type="icon-dip-auto-line" />} onClick={() => data.autoLine?.()} />
+                  <Tooltip title={intl.get('Object.addFieldAsNewDataAttribute')}>
+                    <Button.Icon icon={<IconFont type="icon-dip-pickup" style={{ fontSize: 18 }} />} onClick={() => data.pickAttribute?.()} />
+                  </Tooltip>
+                  <Tooltip title={intl.get('Object.smartMatchingConnection')}>
+                    <Button.Icon icon={<IconFont type="icon-dip-auto-line" style={{ fontSize: 18 }} />} onClick={() => data.autoLine?.()} />
+                  </Tooltip>
                   <Dropdown
-                    trigger={['click']}
                     menu={{
                       items: dropdownMenu,
                       onClick: (event: any) => {
@@ -75,24 +78,28 @@ const CustomNode = ({ data, id }: OntologyObjectType.TNode) => {
                   </Dropdown>
                 </>
               ) : (
-                <PlusOutlined
-                  style={{ color: 'rgb(18, 110, 227)', fontSize: '16px', cursor: 'pointer' }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    data.openDataViewSource?.();
-                  }}
-                />
+                <Tooltip title={intl.get('Global.chooseDataView')}>
+                  <PlusOutlined
+                    style={{ color: 'rgb(18, 110, 227)', fontSize: '16px', cursor: 'pointer' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      data.openDataViewSource?.();
+                    }}
+                  />
+                </Tooltip>
               )}
             </>
           )}
           {id === 'data' && (
-            <PlusOutlined
-              style={{ color: 'rgb(18, 110, 227)', fontSize: '16px', cursor: 'pointer' }}
-              onClick={(e) => {
-                e.stopPropagation();
-                data.addDataAttribute?.();
-              }}
-            />
+            <Tooltip title={intl.get('Object.addDataAttribute')}>
+              <PlusOutlined
+                style={{ color: 'rgb(18, 110, 227)', fontSize: '16px', cursor: 'pointer' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  data.addDataAttribute?.();
+                }}
+              />
+            </Tooltip>
           )}
         </div>
       </div>
