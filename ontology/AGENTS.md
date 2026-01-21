@@ -66,6 +66,12 @@ Goal: Every change should make the system more "ordered" — easier to understan
 
 ## Testing
 
+### Environment Variables
+
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `I18N_MODE_UT` | `true` | Required for unit tests. Enables locale loading from source directory instead of working directory. |
+
 ### Running Tests
 
 ```bash
@@ -73,19 +79,24 @@ Goal: Every change should make the system more "ordered" — easier to understan
 cd ontology-manager/server
 go test ./... -v
 
-# Run all unit tests for ontology-query
+# Run all unit tests for ontology-query (requires I18N_MODE_UT)
 cd ontology-query/server
-go test ./... -v
+
+# PowerShell
+$env:I18N_MODE_UT = "true"; go test ./... -v
+
+# Bash / Linux / macOS
+I18N_MODE_UT=true go test ./... -v
 
 # Run tests with coverage
-go test ./... -coverprofile=coverage.out
+I18N_MODE_UT=true go test ./... -coverprofile=coverage.out
 go tool cover -html=coverage.out
 
 # Run specific package tests
-go test ./logics/... -v
+I18N_MODE_UT=true go test ./logics/... -v
 
 # Run tests with race detection
-go test ./... -race
+I18N_MODE_UT=true go test ./... -race
 ```
 
 ### Test Conventions
