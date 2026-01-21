@@ -1,45 +1,45 @@
 # Action Execution
 [OntologyQuery.ActionExecution.InvalidParameter]
-Description = "Invalid Request Parameter"
-Solution = "Please check whether the parameter is correct."
-ErrorLink = "None"
+Description = "Invalid request parameter"
+Solution = "Please check if the parameters are correct."
+ErrorLink = "N/A"
 
 [OntologyQuery.ActionExecution.ActionTypeNotFound]
-Description = "The Action Type Does Not Exist"
+Description = "Action type not found"
 Solution = "Please check if the action type ID is correct."
-ErrorLink = "None"
+ErrorLink = "N/A"
 
 [OntologyQuery.ActionExecution.ExecutionNotFound]
-Description = "The Execution Record Does Not Exist"
+Description = "Execution record not found"
 Solution = "Please check if the execution ID is correct."
-ErrorLink = "None"
+ErrorLink = "N/A"
 
 [OntologyQuery.ActionExecution.DuplicateExecution]
-Description = "Duplicate Execution Detected"
+Description = "Duplicate execution detected"
 Solution = "An execution for this action is already in progress. Please wait for it to complete."
-ErrorLink = "None"
+ErrorLink = "N/A"
 
 [OntologyQuery.ActionExecution.GetActionTypeFailed]
-Description = "Failed to Get Action Type"
-Solution = "Please try again. If the error occurs again, please submit the work order or contact technical support."
-ErrorLink = "None"
+Description = "Failed to get action type"
+Solution = "Please try again. If the error occurs again, please submit a ticket or contact technical support."
+ErrorLink = "N/A"
 
 [OntologyQuery.ActionExecution.CreateExecutionFailed]
-Description = "Failed to Create Execution Record"
-Solution = "Please try again. If the error occurs again, please submit the work order or contact technical support."
-ErrorLink = "None"
+Description = "Failed to create execution record"
+Solution = "Please try again. If the error occurs again, please submit a ticket or contact technical support."
+ErrorLink = "N/A"
 
 [OntologyQuery.ActionExecution.ExecuteToolFailed]
-Description = "Tool Execution Failed"
+Description = "Tool execution failed"
 Solution = "Please check the tool configuration and try again."
-ErrorLink = "None"
+ErrorLink = "N/A"
 
 [OntologyQuery.ActionExecution.ExecuteMCPFailed]
-Description = "MCP Execution Failed"
+Description = "MCP execution failed"
 Solution = "Please check the MCP configuration and try again."
-ErrorLink = "None"
+ErrorLink = "N/A"
 
 [OntologyQuery.ActionExecution.QueryExecutionsFailed]
-Description = "Failed to Query Execution Logs"
-Solution = "Please try again. If the error occurs again, please submit the work order or contact technical support."
-ErrorLink = "None"
+Description = "Failed to query execution logs"
+Solution = "Please try again. If the error occurs again, please submit a ticket or contact technical support."
+ErrorLink = "N/A"

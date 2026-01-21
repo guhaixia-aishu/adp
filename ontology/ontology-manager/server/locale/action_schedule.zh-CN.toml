@@ -1,31 +1,50 @@
-# Action Schedule Error Messages (Chinese)
-
+# 行动计划
 [OntologyManager.ActionSchedule.InvalidParameter]
-text = "参数无效"
+Description = "参数无效"
+Solution = "请检查参数是否正确。"
+ErrorLink = "暂无"
 
 [OntologyManager.ActionSchedule.InvalidCronExpression]
-text = "Cron表达式无效"
+Description = "Cron表达式无效"
+Solution = "请检查Cron表达式格式是否正确。"
+ErrorLink = "暂无"
 
 [OntologyManager.ActionSchedule.InvalidStatus]
-text = "状态值无效"
+Description = "状态值无效"
+Solution = "请检查状态值是否正确。"
+ErrorLink = "暂无"
 
 [OntologyManager.ActionSchedule.ActionTypeNotFound]
-text = "行动类不存在"
+Description = "行动类不存在"
+Solution = "请检查行动类ID是否正确。"
+ErrorLink = "暂无"
 
 [OntologyManager.ActionSchedule.NotFound]
-text = "行动计划不存在"
+Description = "行动计划不存在"
+Solution = "请检查行动计划ID是否正确。"
+ErrorLink = "暂无"
 
 [OntologyManager.ActionSchedule.CreateFailed]
-text = "创建行动计划失败"
+Description = "创建行动计划失败"
+Solution = "请重试该操作，若再次出现该错误请提交工单或联系技术支持工程师。"
+ErrorLink = "暂无"
 
 [OntologyManager.ActionSchedule.UpdateFailed]
-text = "更新行动计划失败"
+Description = "更新行动计划失败"
+Solution = "请重试该操作，若再次出现该错误请提交工单或联系技术支持工程师。"
+ErrorLink = "暂无"
 
 [OntologyManager.ActionSchedule.DeleteFailed]
-text = "删除行动计划失败"
+Description = "删除行动计划失败"
+Solution = "请重试该操作，若再次出现该错误请提交工单或联系技术支持工程师。"
+ErrorLink = "暂无"
 
 [OntologyManager.ActionSchedule.GetFailed]
-text = "获取行动计划失败"
+Description = "获取行动计划失败"
+Solution = "请重试该操作，若再次出现该错误请提交工单或联系技术支持工程师。"
+ErrorLink = "暂无"
 
 [OntologyManager.ActionSchedule.GetActionTypeFailed]
-text = "获取行动类失败"
+Description = "获取行动类失败"
+Solution = "请重试该操作，若再次出现该错误请提交工单或联系技术支持工程师。"
+ErrorLink = "暂无"

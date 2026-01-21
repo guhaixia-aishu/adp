@@ -1,31 +1,50 @@
-# Action Schedule Error Messages (English)
-
+# Action Schedule
 [OntologyManager.ActionSchedule.InvalidParameter]
-text = "Invalid parameter"
+Description = "Invalid parameter"
+Solution = "Please check if the parameters are correct."
+ErrorLink = "N/A"
 
 [OntologyManager.ActionSchedule.InvalidCronExpression]
-text = "Invalid cron expression"
+Description = "Invalid cron expression"
+Solution = "Please check if the cron expression format is correct."
+ErrorLink = "N/A"
 
 [OntologyManager.ActionSchedule.InvalidStatus]
-text = "Invalid status value"
+Description = "Invalid status value"
+Solution = "Please check if the status value is correct."
+ErrorLink = "N/A"
 
 [OntologyManager.ActionSchedule.ActionTypeNotFound]
-text = "Action type not found"
+Description = "Action type not found"
+Solution = "Please check if the action type ID is correct."
+ErrorLink = "N/A"
 
 [OntologyManager.ActionSchedule.NotFound]
-text = "Action schedule not found"
+Description = "Action schedule not found"
+Solution = "Please check if the action schedule ID is correct."
+ErrorLink = "N/A"
 
 [OntologyManager.ActionSchedule.CreateFailed]
-text = "Failed to create action schedule"
+Description = "Failed to create action schedule"
+Solution = "Please try again. If the error occurs again, please submit a ticket or contact technical support."
+ErrorLink = "N/A"
 
 [OntologyManager.ActionSchedule.UpdateFailed]
-text = "Failed to update action schedule"
+Description = "Failed to update action schedule"
+Solution = "Please try again. If the error occurs again, please submit a ticket or contact technical support."
+ErrorLink = "N/A"
 
 [OntologyManager.ActionSchedule.DeleteFailed]
-text = "Failed to delete action schedule"
+Description = "Failed to delete action schedule"
+Solution = "Please try again. If the error occurs again, please submit a ticket or contact technical support."
+ErrorLink = "N/A"
 
 [OntologyManager.ActionSchedule.GetFailed]
-text = "Failed to get action schedule"
+Description = "Failed to get action schedule"
+Solution = "Please try again. If the error occurs again, please submit a ticket or contact technical support."
+ErrorLink = "N/A"
 
 [OntologyManager.ActionSchedule.GetActionTypeFailed]
-text = "Failed to get action type"
+Description = "Failed to get action type"
+Solution = "Please try again. If the error occurs again, please submit a ticket or contact technical support."
+ErrorLink = "N/A"
