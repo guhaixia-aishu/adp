@@ -29,6 +29,7 @@ todos:
   - id: main-init
     content: Initialize worker in main.go and add cron dependency
     status: completed
+isProject: false
 ---
 
 # Scheduled Action Plan Implementation
@@ -63,6 +64,8 @@ flowchart TB
     W1 -->|POST if got lock| ExecAPI
     W2 -->|POST if got lock| ExecAPI
 ```
+
+
 
 **Key**: Only ONE pod acquires the lock and executes; others skip.
 
@@ -154,6 +157,8 @@ sequenceDiagram
     Q-->>P1: execution_id
     P1->>DB: ReleaseLock + UpdateTimes
 ```
+
+
 
 ## API Design
 
@@ -252,6 +257,8 @@ sequenceDiagram
         end
     end
 ```
+
+
 
 ## Key Dependencies
 

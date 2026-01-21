@@ -2,6 +2,7 @@
 name: Ontology Schedule Management
 overview: ""
 todos: []
+isProject: false
 ---
 
 # Plan for Schedule Management
@@ -11,3 +12,4 @@ todos: []
 - **Scheduler style**: pull-based (ontology-query calls manager for due schedules)
 - **Cron format**: standard 5-field crontab
 - **Target
+
