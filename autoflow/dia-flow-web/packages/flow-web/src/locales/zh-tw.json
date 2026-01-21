@@ -1198,5 +1198,8 @@
     "ci": "次",
     "operational.objective": "運行目標",
     "reason.for.failure": "失敗原因：",
-    "failed.node": "失敗節點："
+    "failed.node": "失敗節點：",
+    "customExecutor.workflow": "工作流",
+    "customExecutor.dataflow": "資料流",
+    "customExecutor.subprocess.error": "在目前子流程或其引用的子流程中，存在循環呼叫關係，請修改"
 }
