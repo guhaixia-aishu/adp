@@ -159,7 +159,12 @@ func (s *actionScheduleService) UpdateSchedule(ctx context.Context, scheduleID s
 
 	// Recalculate next run time if cron changed and schedule is active
 	if req.CronExpression != "" && existing.Status == interfaces.ScheduleStatusActive {
-		nextRunTime, _ := s.CalculateNextRunTime(cronExpr, now)
+		nextRunTime, err := s.CalculateNextRunTime(cronExpr, now)
+		if err != nil {
+			logger.Errorf("Failed to calculate next run time for schedule %s: %v", scheduleID, err)
+			return rest.NewHTTPError(ctx, http.StatusBadRequest, oerrors.OntologyManager_ActionSchedule_InvalidCronExpression).
+				WithErrorDetails(err.Error())
+		}
 		update.NextRunTime = nextRunTime
 	}
 

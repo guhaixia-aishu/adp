@@ -145,11 +145,21 @@ func (a *actionScheduleAccess) UpdateSchedule(ctx context.Context, tx *sql.Tx, s
 		builder = builder.Set("f_cron_expression", schedule.CronExpression)
 	}
 	if schedule.UniqueIdentities != nil {
-		uniqueIdentitiesStr, _ := sonic.MarshalString(schedule.UniqueIdentities)
+		uniqueIdentitiesStr, err := sonic.MarshalString(schedule.UniqueIdentities)
+		if err != nil {
+			logger.Errorf("Failed to marshal unique_identities: %s", err.Error())
+			span.SetStatus(codes.Error, "Marshal unique_identities failed")
+			return err
+		}
 		builder = builder.Set("f_unique_identities", uniqueIdentitiesStr)
 	}
 	if schedule.DynamicParams != nil {
-		dynamicParamsStr, _ := sonic.MarshalString(schedule.DynamicParams)
+		dynamicParamsStr, err := sonic.MarshalString(schedule.DynamicParams)
+		if err != nil {
+			logger.Errorf("Failed to marshal dynamic_params: %s", err.Error())
+			span.SetStatus(codes.Error, "Marshal dynamic_params failed")
+			return err
+		}
 		builder = builder.Set("f_dynamic_params", dynamicParamsStr)
 	}
 	if schedule.NextRunTime != 0 {
@@ -587,10 +597,18 @@ func (a *actionScheduleAccess) scanSchedule(row *sql.Row) (*interfaces.ActionSch
 	}
 
 	if uniqueIdentitiesStr != "" {
-		sonic.UnmarshalString(uniqueIdentitiesStr, &schedule.UniqueIdentities)
+		if err := sonic.UnmarshalString(uniqueIdentitiesStr, &schedule.UniqueIdentities); err != nil {
+			logger.Warnf("Failed to unmarshal unique_identities for schedule %s: %v", schedule.ID, err)
+			// Initialize to empty slice to avoid nil pointer issues
+			schedule.UniqueIdentities = []map[string]any{}
+		}
 	}
 	if dynamicParamsStr != "" {
-		sonic.UnmarshalString(dynamicParamsStr, &schedule.DynamicParams)
+		if err := sonic.UnmarshalString(dynamicParamsStr, &schedule.DynamicParams); err != nil {
+			logger.Warnf("Failed to unmarshal dynamic_params for schedule %s: %v", schedule.ID, err)
+			// Initialize to empty map to avoid nil pointer issues
+			schedule.DynamicParams = map[string]any{}
+		}
 	}
 
 	return &schedule, nil
@@ -631,10 +649,18 @@ func (a *actionScheduleAccess) scanScheduleFromRows(rows *sql.Rows) (*interfaces
 	}
 
 	if uniqueIdentitiesStr != "" {
-		sonic.UnmarshalString(uniqueIdentitiesStr, &schedule.UniqueIdentities)
+		if err := sonic.UnmarshalString(uniqueIdentitiesStr, &schedule.UniqueIdentities); err != nil {
+			logger.Warnf("Failed to unmarshal unique_identities for schedule %s: %v", schedule.ID, err)
+			// Initialize to empty slice to avoid nil pointer issues
+			schedule.UniqueIdentities = []map[string]any{}
+		}
 	}
 	if dynamicParamsStr != "" {
-		sonic.UnmarshalString(dynamicParamsStr, &schedule.DynamicParams)
+		if err := sonic.UnmarshalString(dynamicParamsStr, &schedule.DynamicParams); err != nil {
+			logger.Warnf("Failed to unmarshal dynamic_params for schedule %s: %v", schedule.ID, err)
+			// Initialize to empty map to avoid nil pointer issues
+			schedule.DynamicParams = map[string]any{}
+		}
 	}
 
 	return &schedule, nil
