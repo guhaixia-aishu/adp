@@ -80,16 +80,8 @@ func (r *restHandler) ExecuteAction(c *gin.Context, visitor rest.Visitor) {
 	req.KNID = knID
 	req.ActionTypeID = atID
 
-	// Validate request
-	if len(req.UniqueIdentities) == 0 {
-		httpErr := rest.NewHTTPError(ctx, http.StatusBadRequest, oerrors.OntologyQuery_ActionExecution_InvalidParameter).
-			WithErrorDetails("unique_identities is required and cannot be empty")
-
-		o11y.AddHttpAttrs4HttpError(span, httpErr)
-		o11y.Error(ctx, fmt.Sprintf("%s. %v", httpErr.BaseError.Description, httpErr.BaseError.ErrorDetails))
-		rest.ReplyError(c, httpErr)
-		return
-	}
+	// Note: unique_identities is optional
+	// If not provided, the action will apply to all entities matching the action type's conditions
 
 	// Execute action
 	result, err := r.ass.ExecuteAction(ctx, &req)
