@@ -182,9 +182,13 @@ func (s *actionSchedulerService) executeAsync(execution *interfaces.ActionExecut
 	logger.Infof("Starting async execution: %s", execution.ID)
 
 	// Update status to running
-	s.logsService.UpdateExecution(ctx, execution.KNID, execution.ID, map[string]any{
+	if err := s.logsService.UpdateExecution(ctx, execution.KNID, execution.ID, map[string]any{
 		"status": interfaces.ExecutionStatusRunning,
-	})
+	}); err != nil {
+		// Log error but continue execution - the record exists in pending status
+		// and will be updated again at completion
+		logger.Warnf("Failed to update execution status to running: %v", err)
+	}
 
 	// Execute each object
 	successCount := 0

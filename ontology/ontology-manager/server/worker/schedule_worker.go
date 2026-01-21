@@ -170,7 +170,10 @@ func (w *ScheduleWorker) tryExecuteSchedule(ctx context.Context, schedule *inter
 	nextRunTime, err := w.calculateNextRunTime(schedule.CronExpression, now)
 	if err != nil {
 		logger.Errorf("Failed to calculate next run time for schedule %s: %v", schedule.ID, err)
-		nextRunTime = 0
+		// Use fallback: retry after 1 hour to prevent schedule from being permanently stuck
+		// This should rarely happen since cron expressions are validated at creation time
+		nextRunTime = now + int64(time.Hour.Milliseconds())
+		logger.Warnf("Using fallback next run time for schedule %s: %d", schedule.ID, nextRunTime)
 	}
 
 	// Release lock and update times

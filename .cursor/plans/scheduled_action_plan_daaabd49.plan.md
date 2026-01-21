@@ -73,39 +73,25 @@ flowchart TB
 
 ### New Table: `t_action_schedule`
 
-| Column | Type | Description |
 
-|--------|------|-------------|
+| Column                      | Type         | Description                                  |
+| --------------------------- | ------------ | -------------------------------------------- |
+| f_id                        | VARCHAR(40)  | Schedule ID (PK)                             |
+| f_name                      | VARCHAR(100) | Schedule name                                |
+| f_kn_id                     | VARCHAR(40)  | Knowledge network ID                         |
+| f_branch                    | VARCHAR(40)  | Branch                                       |
+| f_action_type_id            | VARCHAR(40)  | Action type to execute                       |
+| f_cron_expression           | VARCHAR(100) | Standard 5-field cron (min hour dom mon dow) |
+| f_unique_identities         | MEDIUMTEXT   | JSON array of target objects                 |
+| f_dynamic_params            | MEDIUMTEXT   | JSON object of dynamic params                |
+| f_status                    | VARCHAR(20)  | `active` or `inactive`                       |
+| f_last_run_time             | BIGINT(20)   | Last execution timestamp                     |
+| f_next_run_time             | BIGINT(20)   | Next scheduled run timestamp                 |
+| **f_lock_holder**           | VARCHAR(64)  | Pod ID holding lock (NULL = unlocked)        |
+| **f_lock_time**             | BIGINT(20)   | Lock timestamp (for timeout detection)       |
+| f_creator/f_updater         | VARCHAR(40)  | Audit fields                                 |
+| f_create_time/f_update_time | BIGINT(20)   | Timestamps                                   |
 
-| f_id | VARCHAR(40) | Schedule ID (PK) |
-
-| f_name | VARCHAR(100) | Schedule name |
-
-| f_kn_id | VARCHAR(40) | Knowledge network ID |
-
-| f_branch | VARCHAR(40) | Branch |
-
-| f_action_type_id | VARCHAR(40) | Action type to execute |
-
-| f_cron_expression | VARCHAR(100) | Standard 5-field cron (min hour dom mon dow) |
-
-| f_unique_identities | MEDIUMTEXT | JSON array of target objects |
-
-| f_dynamic_params | MEDIUMTEXT | JSON object of dynamic params |
-
-| f_status | VARCHAR(20) | `active` or `inactive` |
-
-| f_last_run_time | BIGINT(20) | Last execution timestamp |
-
-| f_next_run_time | BIGINT(20) | Next scheduled run timestamp |
-
-| **f_lock_holder** | VARCHAR(64) | Pod ID holding lock (NULL = unlocked) |
-
-| **f_lock_time** | BIGINT(20) | Lock timestamp (for timeout detection) |
-
-| f_creator/f_updater | VARCHAR(40) | Audit fields |
-
-| f_create_time/f_update_time | BIGINT(20) | Timestamps |
 
 ## Multi-Pod Distributed Lock Strategy
 
@@ -164,71 +150,54 @@ sequenceDiagram
 
 ### ontology-manager APIs
 
-| Method | Path | Description |
 
-|--------|------|-------------|
+| Method | Path                                                                | Description         |
+| ------ | ------------------------------------------------------------------- | ------------------- |
+| POST   | `/knowledge-networks/{kn_id}/action-schedules`                      | Create schedule     |
+| GET    | `/knowledge-networks/{kn_id}/action-schedules`                      | List schedules      |
+| GET    | `/knowledge-networks/{kn_id}/action-schedules/{schedule_id}`        | Get schedule        |
+| PUT    | `/knowledge-networks/{kn_id}/action-schedules/{schedule_id}`        | Update schedule     |
+| DELETE | `/knowledge-networks/{kn_id}/action-schedules/{schedule_ids}`       | Delete schedules    |
+| PUT    | `/knowledge-networks/{kn_id}/action-schedules/{schedule_id}/status` | Activate/deactivate |
 
-| POST | `/knowledge-networks/{kn_id}/action-schedules` | Create schedule |
-
-| GET | `/knowledge-networks/{kn_id}/action-schedules` | List schedules |
-
-| GET | `/knowledge-networks/{kn_id}/action-schedules/{schedule_id}` | Get schedule |
-
-| PUT | `/knowledge-networks/{kn_id}/action-schedules/{schedule_id}` | Update schedule |
-
-| DELETE | `/knowledge-networks/{kn_id}/action-schedules/{schedule_ids}` | Delete schedules |
-
-| PUT | `/knowledge-networks/{kn_id}/action-schedules/{schedule_id}/status` | Activate/deactivate |
 
 ### ontology-manager Internal API (for query to pull)
 
-| Method | Path | Description |
 
-|--------|------|-------------|
+| Method | Path                                                     | Description       |
+| ------ | -------------------------------------------------------- | ----------------- |
+| GET    | `/in/v1/knowledge-networks/{kn_id}/action-schedules/due` | Get due schedules |
 
-| GET | `/in/v1/knowledge-networks/{kn_id}/action-schedules/due` | Get due schedules |
 
 ## Implementation Structure
 
 ### ontology-manager New Files
 
-| File | Purpose |
 
-|------|---------|
+| File                                                                                                                                         | Purpose                     |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| [interfaces/action_schedule.go](ontology-manager/server/interfaces/action_schedule.go)                                                       | Schedule DTOs and constants |
+| [interfaces/action_schedule_access.go](ontology-manager/server/interfaces/action_schedule_access.go)                                         | ScheduleAccess interface    |
+| [interfaces/action_schedule_service.go](ontology-manager/server/interfaces/action_schedule_service.go)                                       | ScheduleService interface   |
+| [drivenadapters/action_schedule/action_schedule_access.go](ontology-manager/server/drivenadapters/action_schedule/action_schedule_access.go) | DB access layer             |
+| [logics/action_schedule/action_schedule_service.go](ontology-manager/server/logics/action_schedule/action_schedule_service.go)               | Business logic              |
+| [driveradapters/action_schedule_handler.go](ontology-manager/server/driveradapters/action_schedule_handler.go)                               | HTTP handlers               |
+| [driveradapters/validate_action_schedule.go](ontology-manager/server/driveradapters/validate_action_schedule.go)                             | Request validation          |
+| [worker/schedule_worker.go](ontology-manager/server/worker/schedule_worker.go)                                                               | Cron-based scheduler        |
+| [errors/action_schedule.go](ontology-manager/server/errors/action_schedule.go)                                                               | Error codes                 |
+| [locale/action_schedule.*.toml](ontology-manager/server/locale/)                                                                             | i18n messages               |
 
-| [interfaces/action_schedule.go](ontology-manager/server/interfaces/action_schedule.go) | Schedule DTOs and constants |
-
-| [interfaces/action_schedule_access.go](ontology-manager/server/interfaces/action_schedule_access.go) | ScheduleAccess interface |
-
-| [interfaces/action_schedule_service.go](ontology-manager/server/interfaces/action_schedule_service.go) | ScheduleService interface |
-
-| [drivenadapters/action_schedule/action_schedule_access.go](ontology-manager/server/drivenadapters/action_schedule/action_schedule_access.go) | DB access layer |
-
-| [logics/action_schedule/action_schedule_service.go](ontology-manager/server/logics/action_schedule/action_schedule_service.go) | Business logic |
-
-| [driveradapters/action_schedule_handler.go](ontology-manager/server/driveradapters/action_schedule_handler.go) | HTTP handlers |
-
-| [driveradapters/validate_action_schedule.go](ontology-manager/server/driveradapters/validate_action_schedule.go) | Request validation |
-
-| [worker/schedule_worker.go](ontology-manager/server/worker/schedule_worker.go) | Cron-based scheduler |
-
-| [errors/action_schedule.go](ontology-manager/server/errors/action_schedule.go) | Error codes |
-
-| [locale/action_schedule.*.toml](ontology-manager/server/locale/) | i18n messages |
 
 ### ontology-manager Modified Files
 
-| File | Changes |
 
-|------|---------|
+| File                                                                           | Changes                    |
+| ------------------------------------------------------------------------------ | -------------------------- |
+| [driveradapters/routers.go](ontology-manager/server/driveradapters/routers.go) | Add schedule routes        |
+| [logics/driven_access.go](ontology-manager/server/logics/driven_access.go)     | Add schedule access        |
+| [main.go](ontology-manager/server/main.go)                                     | Initialize schedule worker |
+| [go.mod](ontology-manager/server/go.mod)                                       | Add robfig/cron v3         |
 
-| [driveradapters/routers.go](ontology-manager/server/driveradapters/routers.go) | Add schedule routes |
-
-| [logics/driven_access.go](ontology-manager/server/logics/driven_access.go) | Add schedule access |
-
-| [main.go](ontology-manager/server/main.go) | Initialize schedule worker |
-
-| [go.mod](ontology-manager/server/go.mod) | Add robfig/cron v3 |
 
 ### Database Migration
 
@@ -266,12 +235,11 @@ sequenceDiagram
 
 ## Worker Configuration
 
-| Config | Default | Description |
 
-|--------|---------|-------------|
+| Config                       | Default | Description                         |
+| ---------------------------- | ------- | ----------------------------------- |
+| `schedule_poll_interval`     | 10s     | How often to poll for due schedules |
+| `schedule_lock_timeout`      | 5m      | Stale lock auto-release timeout     |
+| `schedule_execution_timeout` | 10m     | Max time for a single execution     |
 
-| `schedule_poll_interval` | 10s | How often to poll for due schedules |
 
-| `schedule_lock_timeout` | 5m | Stale lock auto-release timeout |
-
-| `schedule_execution_timeout` | 10m | Max time for a single execution |
