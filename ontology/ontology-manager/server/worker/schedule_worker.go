@@ -190,6 +190,7 @@ func (w *ScheduleWorker) executeSchedule(ctx context.Context, schedule *interfac
 		w.appSetting.OntologyQueryUrl, schedule.KNID, schedule.ActionTypeID)
 
 	requestBody := map[string]any{
+		"trigger_type":      "scheduled",
 		"unique_identities": schedule.UniqueIdentities,
 		"dynamic_params":    schedule.DynamicParams,
 	}

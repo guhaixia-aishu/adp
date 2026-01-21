@@ -31,6 +31,7 @@ const (
 type ActionExecutionRequest struct {
 	KNID             string           `json:"-"`
 	ActionTypeID     string           `json:"-"`
+	TriggerType      string           `json:"trigger_type,omitempty"` // "manual" or "scheduled", defaults to "manual"
 	UniqueIdentities []map[string]any `json:"unique_identities"`
 	DynamicParams    map[string]any   `json:"dynamic_params,omitempty"`
 }

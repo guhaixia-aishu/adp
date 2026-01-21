@@ -116,6 +116,12 @@ func (s *actionSchedulerService) ExecuteAction(ctx context.Context, req *interfa
 		}
 	}
 
+	// Determine trigger type (default to manual if not specified)
+	triggerType := req.TriggerType
+	if triggerType == "" {
+		triggerType = interfaces.TriggerTypeManual
+	}
+
 	// Create execution record
 	execution := &interfaces.ActionExecution{
 		ID:               executionID,
@@ -125,7 +131,7 @@ func (s *actionSchedulerService) ExecuteAction(ctx context.Context, req *interfa
 		ActionSourceType: actionType.ActionSource.Type,
 		ActionSource:     actionType.ActionSource,
 		ObjectTypeID:     actionType.ObjectTypeID,
-		TriggerType:      interfaces.TriggerTypeManual,
+		TriggerType:      triggerType,
 		Status:           interfaces.ExecutionStatusPending,
 		TotalCount:       len(req.UniqueIdentities),
 		SuccessCount:     0,

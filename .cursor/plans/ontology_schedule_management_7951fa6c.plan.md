@@ -9,7 +9,6 @@ isProject: false
 
 ## Scope and Decisions
 
-- **Scheduler style**: pull-based (ontology-query calls manager for due schedules)
+- **Scheduler style**: push-based (ontology-manager worker polls and triggers ontology-query)
 - **Cron format**: standard 5-field crontab
-- **Target
-
+- **Target service**: ontology-query handles action execution
