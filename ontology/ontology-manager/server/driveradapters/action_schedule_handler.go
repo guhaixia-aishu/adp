@@ -19,9 +19,16 @@ import (
 	"ontology-manager/interfaces"
 )
 
-// CreateActionSchedule creates a new action schedule
-func (r *restHandler) CreateActionSchedule(c *gin.Context) {
-	logger.Debug("Handler CreateActionSchedule Start")
+// CreateActionScheduleByIn creates a new action schedule (internal)
+func (r *restHandler) CreateActionScheduleByIn(c *gin.Context) {
+	logger.Debug("Handler CreateActionScheduleByIn Start")
+	visitor := GenerateVisitor(c)
+	r.CreateActionSchedule(c, visitor)
+}
+
+// CreateActionScheduleByEx creates a new action schedule (external)
+func (r *restHandler) CreateActionScheduleByEx(c *gin.Context) {
+	logger.Debug("Handler CreateActionScheduleByEx Start")
 	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "创建行动计划", trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
@@ -29,6 +36,14 @@ func (r *restHandler) CreateActionSchedule(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	r.CreateActionSchedule(c, visitor)
+}
+
+// CreateActionSchedule creates a new action schedule (shared logic)
+func (r *restHandler) CreateActionSchedule(c *gin.Context, visitor rest.Visitor) {
+	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "创建行动计划", trace.WithSpanKind(trace.SpanKindServer))
+	defer span.End()
+
 	accountInfo := interfaces.AccountInfo{
 		ID:   visitor.ID,
 		Type: string(visitor.Type),
@@ -107,9 +122,16 @@ func (r *restHandler) CreateActionSchedule(c *gin.Context) {
 	rest.ReplyOK(c, http.StatusCreated, result)
 }
 
-// UpdateActionSchedule updates an existing action schedule
-func (r *restHandler) UpdateActionSchedule(c *gin.Context) {
-	logger.Debug("Handler UpdateActionSchedule Start")
+// UpdateActionScheduleByIn updates an existing action schedule (internal)
+func (r *restHandler) UpdateActionScheduleByIn(c *gin.Context) {
+	logger.Debug("Handler UpdateActionScheduleByIn Start")
+	visitor := GenerateVisitor(c)
+	r.UpdateActionSchedule(c, visitor)
+}
+
+// UpdateActionScheduleByEx updates an existing action schedule (external)
+func (r *restHandler) UpdateActionScheduleByEx(c *gin.Context) {
+	logger.Debug("Handler UpdateActionScheduleByEx Start")
 	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "更新行动计划", trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
@@ -117,6 +139,14 @@ func (r *restHandler) UpdateActionSchedule(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	r.UpdateActionSchedule(c, visitor)
+}
+
+// UpdateActionSchedule updates an existing action schedule (shared logic)
+func (r *restHandler) UpdateActionSchedule(c *gin.Context, visitor rest.Visitor) {
+	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "更新行动计划", trace.WithSpanKind(trace.SpanKindServer))
+	defer span.End()
+
 	accountInfo := interfaces.AccountInfo{
 		ID:   visitor.ID,
 		Type: string(visitor.Type),
@@ -184,9 +214,16 @@ func (r *restHandler) UpdateActionSchedule(c *gin.Context) {
 	rest.ReplyOK(c, http.StatusOK, nil)
 }
 
-// UpdateActionScheduleStatus updates the status of an action schedule
-func (r *restHandler) UpdateActionScheduleStatus(c *gin.Context) {
-	logger.Debug("Handler UpdateActionScheduleStatus Start")
+// UpdateActionScheduleStatusByIn updates the status of an action schedule (internal)
+func (r *restHandler) UpdateActionScheduleStatusByIn(c *gin.Context) {
+	logger.Debug("Handler UpdateActionScheduleStatusByIn Start")
+	visitor := GenerateVisitor(c)
+	r.UpdateActionScheduleStatus(c, visitor)
+}
+
+// UpdateActionScheduleStatusByEx updates the status of an action schedule (external)
+func (r *restHandler) UpdateActionScheduleStatusByEx(c *gin.Context) {
+	logger.Debug("Handler UpdateActionScheduleStatusByEx Start")
 	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "更新行动计划状态", trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
@@ -194,6 +231,14 @@ func (r *restHandler) UpdateActionScheduleStatus(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	r.UpdateActionScheduleStatus(c, visitor)
+}
+
+// UpdateActionScheduleStatus updates the status of an action schedule (shared logic)
+func (r *restHandler) UpdateActionScheduleStatus(c *gin.Context, visitor rest.Visitor) {
+	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "更新行动计划状态", trace.WithSpanKind(trace.SpanKindServer))
+	defer span.End()
+
 	accountInfo := interfaces.AccountInfo{
 		ID:   visitor.ID,
 		Type: string(visitor.Type),
@@ -250,9 +295,16 @@ func (r *restHandler) UpdateActionScheduleStatus(c *gin.Context) {
 	rest.ReplyOK(c, http.StatusOK, nil)
 }
 
-// DeleteActionSchedules deletes action schedules
-func (r *restHandler) DeleteActionSchedules(c *gin.Context) {
-	logger.Debug("Handler DeleteActionSchedules Start")
+// DeleteActionSchedulesByIn deletes action schedules (internal)
+func (r *restHandler) DeleteActionSchedulesByIn(c *gin.Context) {
+	logger.Debug("Handler DeleteActionSchedulesByIn Start")
+	visitor := GenerateVisitor(c)
+	r.DeleteActionSchedules(c, visitor)
+}
+
+// DeleteActionSchedulesByEx deletes action schedules (external)
+func (r *restHandler) DeleteActionSchedulesByEx(c *gin.Context) {
+	logger.Debug("Handler DeleteActionSchedulesByEx Start")
 	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "删除行动计划", trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
@@ -260,6 +312,14 @@ func (r *restHandler) DeleteActionSchedules(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	r.DeleteActionSchedules(c, visitor)
+}
+
+// DeleteActionSchedules deletes action schedules (shared logic)
+func (r *restHandler) DeleteActionSchedules(c *gin.Context, visitor rest.Visitor) {
+	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "删除行动计划", trace.WithSpanKind(trace.SpanKindServer))
+	defer span.End()
+
 	accountInfo := interfaces.AccountInfo{
 		ID:   visitor.ID,
 		Type: string(visitor.Type),
@@ -304,9 +364,16 @@ func (r *restHandler) DeleteActionSchedules(c *gin.Context) {
 	rest.ReplyOK(c, http.StatusNoContent, nil)
 }
 
-// ListActionSchedules lists action schedules
-func (r *restHandler) ListActionSchedules(c *gin.Context) {
-	logger.Debug("Handler ListActionSchedules Start")
+// ListActionSchedulesByIn lists action schedules (internal)
+func (r *restHandler) ListActionSchedulesByIn(c *gin.Context) {
+	logger.Debug("Handler ListActionSchedulesByIn Start")
+	visitor := GenerateVisitor(c)
+	r.ListActionSchedules(c, visitor)
+}
+
+// ListActionSchedulesByEx lists action schedules (external)
+func (r *restHandler) ListActionSchedulesByEx(c *gin.Context) {
+	logger.Debug("Handler ListActionSchedulesByEx Start")
 	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "列出行动计划", trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
@@ -314,6 +381,14 @@ func (r *restHandler) ListActionSchedules(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	r.ListActionSchedules(c, visitor)
+}
+
+// ListActionSchedules lists action schedules (shared logic)
+func (r *restHandler) ListActionSchedules(c *gin.Context, visitor rest.Visitor) {
+	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "列出行动计划", trace.WithSpanKind(trace.SpanKindServer))
+	defer span.End()
+
 	accountInfo := interfaces.AccountInfo{
 		ID:   visitor.ID,
 		Type: string(visitor.Type),
@@ -397,9 +472,16 @@ func (r *restHandler) ListActionSchedules(c *gin.Context) {
 	rest.ReplyOK(c, http.StatusOK, result)
 }
 
-// GetActionSchedule gets a single action schedule
-func (r *restHandler) GetActionSchedule(c *gin.Context) {
-	logger.Debug("Handler GetActionSchedule Start")
+// GetActionScheduleByIn gets a single action schedule (internal)
+func (r *restHandler) GetActionScheduleByIn(c *gin.Context) {
+	logger.Debug("Handler GetActionScheduleByIn Start")
+	visitor := GenerateVisitor(c)
+	r.GetActionSchedule(c, visitor)
+}
+
+// GetActionScheduleByEx gets a single action schedule (external)
+func (r *restHandler) GetActionScheduleByEx(c *gin.Context) {
+	logger.Debug("Handler GetActionScheduleByEx Start")
 	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "获取行动计划", trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
@@ -407,6 +489,14 @@ func (r *restHandler) GetActionSchedule(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	r.GetActionSchedule(c, visitor)
+}
+
+// GetActionSchedule gets a single action schedule (shared logic)
+func (r *restHandler) GetActionSchedule(c *gin.Context, visitor rest.Visitor) {
+	ctx, span := ar_trace.Tracer.Start(rest.GetLanguageCtx(c), "获取行动计划", trace.WithSpanKind(trace.SpanKindServer))
+	defer span.End()
+
 	accountInfo := interfaces.AccountInfo{
 		ID:   visitor.ID,
 		Type: string(visitor.Type),

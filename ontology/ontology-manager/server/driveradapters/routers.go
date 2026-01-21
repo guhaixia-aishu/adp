@@ -111,12 +111,12 @@ func (r *restHandler) RegisterPublic(c *gin.Engine) {
 		apiV1.GET("/knowledge-networks/:kn_id/jobs/:job_id/tasks", r.ListTasks)
 
 		// 行动计划管理
-		apiV1.POST("/knowledge-networks/:kn_id/action-schedules", r.verifyJsonContentTypeMiddleWare(), r.CreateActionSchedule)
-		apiV1.DELETE("/knowledge-networks/:kn_id/action-schedules/:schedule_ids", r.DeleteActionSchedules)
-		apiV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionSchedule)
-		apiV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id/status", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleStatus)
-		apiV1.GET("/knowledge-networks/:kn_id/action-schedules", r.ListActionSchedules)
-		apiV1.GET("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.GetActionSchedule)
+		apiV1.POST("/knowledge-networks/:kn_id/action-schedules", r.verifyJsonContentTypeMiddleWare(), r.CreateActionScheduleByEx)
+		apiV1.DELETE("/knowledge-networks/:kn_id/action-schedules/:schedule_ids", r.DeleteActionSchedulesByEx)
+		apiV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleByEx)
+		apiV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id/status", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleStatusByEx)
+		apiV1.GET("/knowledge-networks/:kn_id/action-schedules", r.ListActionSchedulesByEx)
+		apiV1.GET("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.GetActionScheduleByEx)
 
 		// 业务知识网络资源示例列表
 		apiV1.GET("/resources", r.ListResources)
@@ -156,6 +156,14 @@ func (r *restHandler) RegisterPublic(c *gin.Engine) {
 		apiInV1.PUT("/knowledge-networks/:kn_id/action-types/:at_id", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionTypeByIn)
 		apiInV1.GET("/knowledge-networks/:kn_id/action-types", r.ListActionTypesByIn)
 		apiInV1.GET("/knowledge-networks/:kn_id/action-types/:at_ids", r.GetActionTypesByIn)
+
+		// 行动计划管理
+		apiInV1.POST("/knowledge-networks/:kn_id/action-schedules", r.verifyJsonContentTypeMiddleWare(), r.CreateActionScheduleByIn)
+		apiInV1.DELETE("/knowledge-networks/:kn_id/action-schedules/:schedule_ids", r.DeleteActionSchedulesByIn)
+		apiInV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleByIn)
+		apiInV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id/status", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleStatusByIn)
+		apiInV1.GET("/knowledge-networks/:kn_id/action-schedules", r.ListActionSchedulesByIn)
+		apiInV1.GET("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.GetActionScheduleByIn)
 	}
 
 	logger.Info("RestHandler RegisterPublic")
