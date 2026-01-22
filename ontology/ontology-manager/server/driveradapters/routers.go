@@ -16,6 +16,7 @@ import (
 	"ontology-manager/common"
 	oerrors "ontology-manager/errors"
 	"ontology-manager/interfaces"
+	"ontology-manager/logics/action_schedule"
 	"ontology-manager/logics/action_type"
 	"ontology-manager/logics/concept_group"
 	"ontology-manager/logics/job"
@@ -32,6 +33,7 @@ type RestHandler interface {
 type restHandler struct {
 	appSetting *common.AppSetting
 	hydra      rest.Hydra
+	ass        interfaces.ActionScheduleService
 	ats        interfaces.ActionTypeService
 	cgs        interfaces.ConceptGroupService
 	js         interfaces.JobService
@@ -44,6 +46,7 @@ func NewRestHandler(appSetting *common.AppSetting) RestHandler {
 	r := &restHandler{
 		appSetting: appSetting,
 		hydra:      rest.NewHydra(appSetting.HydraAdminSetting),
+		ass:        action_schedule.NewActionScheduleService(appSetting),
 		ats:        action_type.NewActionTypeService(appSetting),
 		cgs:        concept_group.NewConceptGroupService(appSetting),
 		js:         job.NewJobService(appSetting),
@@ -107,6 +110,14 @@ func (r *restHandler) RegisterPublic(c *gin.Engine) {
 		apiV1.GET("/knowledge-networks/:kn_id/jobs", r.ListJobsByEx)
 		apiV1.GET("/knowledge-networks/:kn_id/jobs/:job_id/tasks", r.ListTasksByEx)
 
+		// 行动计划管理
+		apiV1.POST("/knowledge-networks/:kn_id/action-schedules", r.verifyJsonContentTypeMiddleWare(), r.CreateActionScheduleByEx)
+		apiV1.DELETE("/knowledge-networks/:kn_id/action-schedules/:schedule_ids", r.DeleteActionSchedulesByEx)
+		apiV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleByEx)
+		apiV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id/status", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleStatusByEx)
+		apiV1.GET("/knowledge-networks/:kn_id/action-schedules", r.ListActionSchedulesByEx)
+		apiV1.GET("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.GetActionScheduleByEx)
+
 		// 业务知识网络资源示例列表
 		apiV1.GET("/resources", r.ListResources)
 	}
@@ -145,6 +156,14 @@ func (r *restHandler) RegisterPublic(c *gin.Engine) {
 		apiInV1.PUT("/knowledge-networks/:kn_id/action-types/:at_id", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionTypeByIn)
 		apiInV1.GET("/knowledge-networks/:kn_id/action-types", r.ListActionTypesByIn)
 		apiInV1.GET("/knowledge-networks/:kn_id/action-types/:at_ids", r.GetActionTypesByIn)
+
+		// 行动计划管理
+		apiInV1.POST("/knowledge-networks/:kn_id/action-schedules", r.verifyJsonContentTypeMiddleWare(), r.CreateActionScheduleByIn)
+		apiInV1.DELETE("/knowledge-networks/:kn_id/action-schedules/:schedule_ids", r.DeleteActionSchedulesByIn)
+		apiInV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleByIn)
+		apiInV1.PUT("/knowledge-networks/:kn_id/action-schedules/:schedule_id/status", r.verifyJsonContentTypeMiddleWare(), r.UpdateActionScheduleStatusByIn)
+		apiInV1.GET("/knowledge-networks/:kn_id/action-schedules", r.ListActionSchedulesByIn)
+		apiInV1.GET("/knowledge-networks/:kn_id/action-schedules/:schedule_id", r.GetActionScheduleByIn)
 
 		// 任务管理
 		apiInV1.POST("/knowledge-networks/:kn_id/jobs", r.verifyJsonContentTypeMiddleWare(), r.CreateJobByIn)

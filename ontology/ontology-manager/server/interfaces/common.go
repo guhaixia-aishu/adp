@@ -106,6 +106,7 @@ const (
 	MODULE_TYPE_JOB                    = "job"
 	MODULE_TYPE_CONCEPT_GROUP          = "concept_group"
 	MODULE_TYPE_CONCEPT_GROUP_RELATION = "concept_group_relation"
+	MODULE_TYPE_ACTION_SCHEDULE        = "action_schedule"
 )
 
 const (

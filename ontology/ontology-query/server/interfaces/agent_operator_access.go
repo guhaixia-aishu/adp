@@ -69,4 +69,6 @@ type OperatorExecutionRequest struct {
 type AgentOperatorAccess interface {
 	GetAgentOperatorByID(ctx context.Context, operatorID string) (AgentOperator, error)
 	ExecuteOperator(ctx context.Context, operatorID string, execRequest OperatorExecutionRequest) (any, error)
+	// ExecuteMCP executes an MCP-based action through agent-operator-integration
+	ExecuteMCP(ctx context.Context, mcpID string, toolName string, execRequest MCPExecutionRequest) (any, error)
 }

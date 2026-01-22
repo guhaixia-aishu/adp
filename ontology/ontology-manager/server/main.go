@@ -21,6 +21,7 @@ import (
 	_ "go.uber.org/automaxprocs"
 
 	"ontology-manager/common"
+	"ontology-manager/drivenadapters/action_schedule"
 	"ontology-manager/drivenadapters/action_type"
 	"ontology-manager/drivenadapters/business_system"
 	"ontology-manager/drivenadapters/concept_group"
@@ -41,10 +42,11 @@ import (
 )
 
 type mgrService struct {
-	appSetting    *common.AppSetting
-	restHandler   driveradapters.RestHandler
-	conceptSyncer *worker.ConceptSyncer
-	jobExecutor   interfaces.JobExecutor
+	appSetting      *common.AppSetting
+	restHandler     driveradapters.RestHandler
+	conceptSyncer   *worker.ConceptSyncer
+	jobExecutor     interfaces.JobExecutor
+	scheduleWorker  *worker.ScheduleWorker
 }
 
 func (server *mgrService) start() {
@@ -63,6 +65,7 @@ func (server *mgrService) start() {
 
 	go server.conceptSyncer.Start()
 	go server.jobExecutor.Start()
+	go server.scheduleWorker.Start()
 
 	// 监听中断信号（SIGINT、SIGTERM）
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -131,6 +134,7 @@ func main() {
 	audit.Init(&appSetting.MQSetting)
 
 	// Set顺序按字母升序排序
+	logics.SetActionScheduleAccess(action_schedule.NewActionScheduleAccess(appSetting))
 	logics.SetActionTypeAccess(action_type.NewActionTypeAccess(appSetting))
 	logics.SetBusinessSystemAccess(business_system.NewBusinessSystemAccess(appSetting))
 	logics.SetConceptGroupAccess(concept_group.NewConceptGroupAccess(appSetting))
@@ -146,10 +150,11 @@ func main() {
 	logics.SetUserMgmtAccess(user_mgmt.NewUserMgmtAccess(appSetting))
 
 	server := &mgrService{
-		appSetting:    appSetting,
-		restHandler:   driveradapters.NewRestHandler(appSetting),
-		conceptSyncer: worker.NewConceptSyncer(appSetting),
-		jobExecutor:   worker.NewJobExecutor(appSetting),
+		appSetting:     appSetting,
+		restHandler:    driveradapters.NewRestHandler(appSetting),
+		conceptSyncer:  worker.NewConceptSyncer(appSetting),
+		jobExecutor:    worker.NewJobExecutor(appSetting),
+		scheduleWorker: worker.NewScheduleWorker(appSetting),
 	}
 	server.start()
 }

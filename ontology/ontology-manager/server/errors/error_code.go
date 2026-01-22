@@ -96,6 +96,7 @@ func init() {
 	rest.Register(ObjectTypeErrCodeList)
 	rest.Register(RelationTypeErrCodeList)
 	rest.Register(ActionTypeErrCodeList)
+	rest.Register(actionScheduleErrCodeList)
 	rest.Register(JobErrCodeList)
 	rest.Register(ConceptGroupErrCodeList)
 }
