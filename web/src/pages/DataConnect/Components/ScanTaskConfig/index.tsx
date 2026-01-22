@@ -32,6 +32,7 @@ const ScanTaskConfig = ({ open, onClose, selectedDataSources = [], isEdit = fals
   const [scheduleStatus, setScheduleStatus] = useState<ScanTaskType.ScheduleScanStatusResponse | null>(null);
 
   const scanType = Form.useWatch('type', form);
+  const expressionType = Form.useWatch('expressionType', form);
 
   // 初始化表单默认值
   const initialValues = {
@@ -165,7 +166,7 @@ const ScanTaskConfig = ({ open, onClose, selectedDataSources = [], isEdit = fals
           </Radio.Group>
         </Form.Item>
 
-        {scanType === 2 && <ScheduleExpression form={form} scheduleType="FIX_RATE" />}
+        {scanType === 2 && <ScheduleExpression form={form} scheduleType={expressionType} />}
 
         <Form.Item
           name="scan_strategy"

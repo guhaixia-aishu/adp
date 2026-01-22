@@ -62,7 +62,7 @@ const TaskExecution: React.FC<TaskExecutionProps> = ({ scanDetail, scheduleStatu
   const [historyDataTotal, setHistoryDataTotal] = useState(0);
 
   // 从 scanDetail 中解析统计数据
-  const { table_count = 0, success_count = 0, fail_count = 0 } = JSON.parse(scanDetail.task_result_info || '{}');
+  const { table_count = 0, success_count = 0, fail_count = 0 } = JSON.parse(selectedHistoryTask?.task_result_info || '{}');
 
   // 获取扫描任务子表数据
   const fetchSubTaskData = async (page: number = 1, pageSize: number = PAGINATION_DEFAULT.pageSize, taskId?: string, keyword?: string) => {
@@ -163,6 +163,13 @@ const TaskExecution: React.FC<TaskExecutionProps> = ({ scanDetail, scheduleStatu
       fetchSubTaskData(1, pagination.pageSize, undefined, '');
     }
   }, [visible]);
+
+  useEffect(() => {
+    if (visible && scanDetail?.type === 2) {
+      // 只调用一次，不依赖searchText
+      fetchHistoryList(1, historyPagination.pageSize);
+    }
+  }, [visible && scanDetail?.type]);
 
   // 查看历史任务详情
   const handleViewHistoryTask = (record: ScanTaskType.ScheduleHistoryItem) => {
