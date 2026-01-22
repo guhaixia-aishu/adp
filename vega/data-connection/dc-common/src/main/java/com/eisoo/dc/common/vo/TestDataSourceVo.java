@@ -1,4 +1,4 @@
-package com.eisoo.dc.datasource.domain.vo;
+package com.eisoo.dc.common.vo;
 
 import com.eisoo.dc.common.constant.Message;
 import com.eisoo.dc.common.deserializer.StringDeserializer;
@@ -20,13 +20,7 @@ import java.io.Serializable;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel
-public class DataSourceVo implements Serializable {
-    @ApiModelProperty(value = "数据源名称", example = "mysql_133_144_1", dataType = "java.lang.String")
-    @NotBlank(message = "数据源名称" + Message.MESSAGE_INPUT_NOT_EMPTY)
-    @Size(min = 1, max = 128, message = "数据源名称长度必须在1-128个字符之间")
-    @Pattern(regexp = "^[a-zA-Z0-9\u4e00-\u9fa5-_]+$", message = "数据源名称仅支持中英文、数字、下划线和中划线")
-    @JsonDeserialize(using = StringDeserializer.class)
-    private String name;
+public class TestDataSourceVo implements Serializable {
 
     @ApiModelProperty(value = "类型", example = "maria", dataType = "java.lang.String")
     @NotBlank(message = "类型" + Message.MESSAGE_INPUT_NOT_EMPTY)
@@ -39,10 +33,5 @@ public class DataSourceVo implements Serializable {
     @NotNull(message = "数据源配置" + Message.MESSAGE_INPUT_NOT_EMPTY)
     @Valid
     private BinDataVo binData;
-
-    @ApiModelProperty(value = "描述", example = "信息项", dataType = "java.lang.String")
-    @Size(max = 255, message = "长度最大为255个字符")
-    @JsonDeserialize(using = StringDeserializer.class)
-    private String comment;
 
 }
