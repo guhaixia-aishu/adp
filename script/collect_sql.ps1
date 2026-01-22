@@ -1,4 +1,4 @@
-﻿$OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 # 收集 SQL 文件的脚本
 # 使用方法：在 PowerShell 中运行 powershell -ExecutionPolicy Bypass -File collect_sql.ps1
