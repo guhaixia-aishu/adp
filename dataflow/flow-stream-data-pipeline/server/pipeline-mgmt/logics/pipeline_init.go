@@ -100,10 +100,10 @@ func NewPipelineInit(appSetting *common.AppSetting) *PipelineInit {
 
 func (pi *PipelineInit) Init() {
 	// userId 存入 context 中
-	ctx := context.WithValue(context.Background(), interfaces.ACCOUNT_INFO_KEY, interfaces.AccountInfo{
-		ID:   interfaces.ADMIN_ID,
-		Type: interfaces.ACCESSOR_TYPE_USER,
-	})
+	// ctx := context.WithValue(context.Background(), interfaces.ACCOUNT_INFO_KEY, interfaces.AccountInfo{
+	// 	ID:   interfaces.ADMIN_ID,
+	// 	Type: interfaces.ACCESSOR_TYPE_USER,
+	// })
 
 	// 检查 MQType
 	mqType := common.GetMQType()
@@ -112,11 +112,11 @@ func (pi *PipelineInit) Init() {
 		return
 	}
 
-	pi.CreatePipeline(ctx, DIP_AUDIT_LOG)
+	// pi.CreatePipeline(ctx, DIP_AUDIT_LOG)
 	// pi.CreatePipeline(ctx, DIP_O11Y_LOG)
 	// pi.CreatePipeline(ctx, DIP_O11Y_METRIC)
 	// pi.CreatePipeline(ctx, DIP_O11Y_TRACE)
-	pi.CreatePipeline(ctx, DIP_MODEL_PERSISTENCE)
+	// pi.CreatePipeline(ctx, DIP_MODEL_PERSISTENCE)
 }
 
 func (pi *PipelineInit) CreatePipeline(ctx context.Context, pipeline *interfaces.Pipeline) {
