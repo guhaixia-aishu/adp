@@ -82,10 +82,11 @@ export default function DetailHeader({
               <div
                 style={{
                   fontSize: '24px',
-                  margin: '12px 0',
+                  margin: '8px 0',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
+                  lineHeight: 1.5,
                 }}
                 title={detailInfo?.name || detailInfo?.box_name}
               >
@@ -122,7 +123,7 @@ export default function DetailHeader({
             </div>
           </div>
           {action === OperateTypeEnum.Edit && (
-            <Space className="operator-detail-header-operate">
+            <Space className="operator-detail-header-operate" align="end">
               {type === OperatorTypeEnum.ToolBox && (
                 <ToolDetailButton
                   detailInfo={detailInfo}
