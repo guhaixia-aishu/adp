@@ -2,6 +2,7 @@ import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginLess } from '@rsbuild/plugin-less';
 import { pluginSvgr } from '@rsbuild/plugin-svgr';
+import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -37,6 +38,7 @@ const entry = getPageEntries(PAGES_DIR);
 export default defineConfig({
   // ========== 插件配置 ==========
   plugins: [
+    pluginNodePolyfill(),
     pluginReact(),
     pluginLess({
       lessLoaderOptions: {

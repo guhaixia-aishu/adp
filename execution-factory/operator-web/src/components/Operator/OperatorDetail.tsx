@@ -4,10 +4,9 @@ import { Layout, message } from 'antd';
 import './style.less';
 import { getOperatorInfo, getOperatorMarketInfo } from '@/apis/agent-operator-integration';
 import { OperateTypeEnum, OperatorTypeEnum, PermConfigTypeEnum } from '../OperatorList/types';
-import OperatorInfo from '../Operator/OperatorInfo';
-import DebugResult from '../OperatorList/DebugResult';
 import DetailHeader from '../OperatorList/DetailHeader';
 import { postResourceOperation } from '@/apis/authorization';
+import API from '@/components/API';
 
 const { Content } = Layout;
 
@@ -54,6 +53,8 @@ export default function OperatorDetail() {
     }
   };
 
+  console.log(111, operatorInfo);
+
   return (
     <div className="operator-detail">
       <DetailHeader
@@ -65,14 +66,7 @@ export default function OperatorDetail() {
       <Layout style={{ padding: '16px', background: '#f5f5f5' }}>
         {/* 右侧内容区域 */}
         <Content style={{ background: 'white', borderRadius: '8px' }}>
-          <OperatorInfo selectedTool={operatorInfo} />
-          {permissionCheckInfo?.includes(PermConfigTypeEnum.Execute) && (
-            <DebugResult
-              selectedTool={operatorInfo}
-              type={OperatorTypeEnum.Operator}
-              permissionCheckInfo={permissionCheckInfo}
-            />
-          )}
+          <API toolInfo={operatorInfo} />
         </Content>
       </Layout>
     </div>

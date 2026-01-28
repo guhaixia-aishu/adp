@@ -17,8 +17,8 @@ import {
 import { MetadataTypeEnum } from '@/apis/agent-operator-integration/type';
 import ToolEmptyIcon from '@/assets/icons/tool-empty.svg';
 import ImportIcon from '@/assets/images/import.svg';
-import DebugResult from '../OperatorList/DebugResult';
-import ToolInfo from '../Tool/ToolInfo';
+import CollapseIcon from '@/assets/icons/collapse.svg';
+import ExpandIcon from '@/assets/icons/expand.svg';
 import MethodTag from '../OperatorList/MethodTag';
 import UploadTool from '../Tool/UploadTool';
 import { OperateTypeEnum, OperatorTypeEnum, PermConfigTypeEnum, ToolStatusEnum } from '../OperatorList/types';
@@ -27,6 +27,8 @@ import { confirmModal } from '@/utils/modal';
 import _ from 'lodash';
 import DetailHeader from '../OperatorList/DetailHeader';
 import { postResourceOperation } from '@/apis/authorization';
+import { useMicroWidgetProps } from '@/hooks';
+import API from '@/components/API';
 
 const { Sider, Content } = Layout;
 const { Paragraph, Text } = Typography;
@@ -42,6 +44,7 @@ enum LoadStatusEnum {
 const inValidMessage = '当前工具关联的底层算子已被删除，工具无法正常调用。建议您删除该工具后重新创建。';
 
 export default function ToolDetail() {
+  const microWidgetProps = useMicroWidgetProps();
   const navigate = useNavigate();
   const [selectedTool, setSelectedTool] = useState<any>({});
   const [toolBoxInfo, setToolBoxInfo] = useState<any>({});
@@ -60,6 +63,7 @@ export default function ToolDetail() {
   const [permissionCheckInfo, setIsPermissionCheckInfo] = useState<Array<PermConfigTypeEnum>>();
   const [toolListTotal, setToolListTotal] = useState(0);
   const [loadStatus, setLoadStatus] = useState<LoadStatusEnum>(LoadStatusEnum.Loading);
+  const [isSiderCollapse, setIsSiderCollapse] = useState(false);
 
   const hasDeletedSelection = useMemo(() => {
     return selectedToolArry.some((item: any) => !item?.metadata?.version);
@@ -73,6 +77,15 @@ export default function ToolDetail() {
   useEffect(() => {
     fetchInfo({});
     resourceOperation();
+  }, []);
+
+  useEffect(() => {
+    // 隐藏侧边栏
+    microWidgetProps?.toggleSideBarShow?.(false);
+
+    return () => {
+      microWidgetProps?.toggleSideBarShow?.(true);
+    };
   }, []);
 
   useEffect(() => {
@@ -327,6 +340,11 @@ export default function ToolDetail() {
     [selectedTool, selectedToolArry]
   );
 
+  // 切换sider的展开/收起状态
+  const toggleSider = () => {
+    setIsSiderCollapse(prev => !prev);
+  };
+
   return (
     <div className={classNames('operator-detail', { 'dip-position-fill dip-flex-column': toolListTotal === 0 })}>
       <DetailHeader
@@ -376,7 +394,18 @@ export default function ToolDetail() {
         ![LoadStatusEnum.Empty, LoadStatusEnum.Loading].includes(loadStatus) && (
           <Layout className="tool-detail-contant">
             {/* 左侧面板 */}
-            <Sider width={500} className="operator-detail-sider">
+            <Sider
+              className={classNames('operator-detail-sider', { 'operator-detail-sider-collapse': isSiderCollapse })}
+            >
+              {!isSiderCollapse && (
+                <Button
+                  icon={<CollapseIcon />}
+                  className="operator-detail-sider-collapse-icon"
+                  type="text"
+                  onClick={toggleSider}
+                />
+              )}
+
               {/* 工具列表 */}
               <div className="operator-detail-sider-content-title">
                 <div className="operator-detail-sider-content">
@@ -469,9 +498,17 @@ export default function ToolDetail() {
               </div>
             </Sider>
             {/* 右侧内容区域 */}
-            <Content style={{ background: 'white', borderRadius: '8px' }}>
+            <Content style={{ background: 'white', borderRadius: '8px', position: 'relative' }}>
+              {isSiderCollapse && (
+                <Button
+                  icon={<ExpandIcon />}
+                  type="text"
+                  className="operator-detail-sider-expand-icon"
+                  onClick={toggleSider}
+                />
+              )}
               {/* 工具不存在，警告 */}
-              {!selectedTool?.metadata?.version && (
+              {!selectedTool?.metadata?.version ? (
                 <div className="tool-detail-warning">
                   <Alert
                     message={inValidMessage}
@@ -481,13 +518,8 @@ export default function ToolDetail() {
                     }}
                   />
                 </div>
-              )}
-
-              <ToolInfo selectedTool={selectedTool} />
-              {selectedTool?.metadata?.version && permissionCheckInfo?.includes(PermConfigTypeEnum.Execute) && (
-                <div id="targetDiv">
-                  <DebugResult selectedTool={selectedTool} type={OperatorTypeEnum.ToolBox} />
-                </div>
+              ) : (
+                <API toolInfo={selectedTool} />
               )}
             </Content>
           </Layout>

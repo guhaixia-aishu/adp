@@ -1,0 +1,51 @@
+.container {
+  position: relative;
+
+  // 放大icon
+  .fullscreen-icon-enlarge {
+    position: absolute !important;
+    top: 12px;
+    right: 12px;
+  }
+
+  // 缩小icon
+  .fullscreen-icon-shrink {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+  }
+
+  :global {
+    .sl-elements-api > .sl-flex {
+      display: none;
+    }
+    [data-testid='two-column-right'] > .sl-stack > .sl-panel:nth-child(2) {
+      display: none;
+    }
+
+    .HttpService > .sl-stack,
+    .HttpService > .sl-relative {
+      display: none;
+    }
+  }
+}
+
+.fullscreen-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+@media screen and (max-width: 1280px) {
+  .not-fullscreen-container {
+    :global {
+      .sl-elements-api > .sl-px-24 {
+        padding-left: 48px !important;
+        padding-right: 48px !important;
+      }
+    }
+  }
+}
