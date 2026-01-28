@@ -65,6 +65,8 @@ export default function ToolDetail() {
   const [loadStatus, setLoadStatus] = useState<LoadStatusEnum>(LoadStatusEnum.Loading);
   const [isSiderCollapse, setIsSiderCollapse] = useState(false);
 
+  const selectedToolDetail = useMemo(() => ({ ...selectedTool, box_id }), [selectedTool]);
+
   const hasDeletedSelection = useMemo(() => {
     return selectedToolArry.some((item: any) => !item?.metadata?.version);
   }, [selectedToolArry]);
@@ -519,7 +521,7 @@ export default function ToolDetail() {
                   />
                 </div>
               ) : (
-                <API toolInfo={selectedTool} />
+                <API toolInfo={selectedToolDetail} operatorType={OperatorTypeEnum.Tool} />
               )}
             </Content>
           </Layout>

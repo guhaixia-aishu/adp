@@ -66,7 +66,7 @@ export default function OperatorDetail() {
       <Layout style={{ padding: '16px', background: '#f5f5f5' }}>
         {/* 右侧内容区域 */}
         <Content style={{ background: 'white', borderRadius: '8px' }}>
-          <API toolInfo={operatorInfo} />
+          <API toolInfo={operatorInfo} operatorType={OperatorTypeEnum.Operator} />
         </Content>
       </Layout>
     </div>

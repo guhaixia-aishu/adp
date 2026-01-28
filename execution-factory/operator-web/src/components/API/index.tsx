@@ -6,14 +6,16 @@ import { FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons';
 import '@stoplight/elements/web-components.min.js';
 import '@stoplight/elements/styles.min.css';
 import { getConfig, getHttpBaseUrl } from '@/utils/http';
+import { OperatorTypeEnum } from '@/components/OperatorList/types';
 import { splitterStr, parsePathParams, parseQueryParams, transformToolInfoToOpenAPI, path2Hash } from './utils';
 import styles from './index.module.less';
 
 interface APIProps {
+  operatorType: OperatorTypeEnum;
   toolInfo: any;
 }
 
-const API = ({ toolInfo }: APIProps) => {
+const API = ({ operatorType, toolInfo }: APIProps) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   useEffect(() => {
@@ -25,7 +27,17 @@ const API = ({ toolInfo }: APIProps) => {
     }
 
     docsElement.apiDescriptionDocument = toolSpec;
-    docsElement.tryItCorsProxy = `${getHttpBaseUrl()}/api/agent-operator-integration/v1/tool-box/${toolInfo.box_id}/tool/${toolInfo.tool_id}/debug/api-web-proxy/${encodeURIComponent(`path=<${toolInfo.metadata?.path}>`)}`;
+    // 后缀字符串
+    const proxySuffix = `${splitterStr}/${encodeURIComponent(`path=<${toolInfo.metadata?.path}>`)}`;
+    switch (operatorType) {
+      case OperatorTypeEnum.Tool:
+        docsElement.tryItCorsProxy = `${getHttpBaseUrl()}/api/agent-operator-integration/v1/tool-box/${toolInfo.box_id}/tool/${toolInfo.tool_id}/debug${proxySuffix}`;
+        break;
+
+      case OperatorTypeEnum.Operator:
+        docsElement.tryItCorsProxy = `${getHttpBaseUrl()}/api/agent-operator-integration/v1/operator/debug${proxySuffix}`;
+        break;
+    }
 
     const [path] = Object.keys(toolSpec.paths);
     if (path) {
@@ -50,7 +62,14 @@ const API = ({ toolInfo }: APIProps) => {
     // 拦截fetch请求，将stoplight-elements的请求代理到后端
     const originalFetch = window.fetch;
     window.fetch = (url: string, options = {}) => {
-      if (/\/api\/agent-operator-integration\/v1\/tool-box\/(.*)\/tool\/(.*)\/debug\/api-web-proxy\//.test(url)) {
+      const regexs = {
+        [OperatorTypeEnum.Tool]: new RegExp(
+          `/api/agent-operator-integration/v1/tool-box/(.*)/tool/(.*)/debug${splitterStr}/`
+        ),
+        [OperatorTypeEnum.Operator]: new RegExp(`/api/agent-operator-integration/v1/operator/debug${splitterStr}/`),
+      };
+
+      if (regexs[operatorType].test(url)) {
         const [targetUrl, apiUrl] = url.split(splitterStr);
         const path = parsePathParams(apiUrl);
         let body = options.body;
@@ -63,10 +82,14 @@ const API = ({ toolInfo }: APIProps) => {
           header: options.headers,
           ...(isEmpty(query) ? {} : { query }),
           ...(isEmpty(path) ? {} : { path }),
+          ...(operatorType === OperatorTypeEnum.Operator
+            ? { operator_id: toolInfo.operator_id, version: toolInfo.version }
+            : {}),
         });
         options.headers = {
           Authorization: 'Bearer ' + getConfig('getToken')(),
         };
+        options.method = 'POST';
         return originalFetch(targetUrl, options);
       }
     };
