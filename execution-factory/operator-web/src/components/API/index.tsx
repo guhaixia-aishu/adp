@@ -46,6 +46,13 @@ const API = ({ operatorType, toolInfo }: APIProps) => {
       // 设置hash
       location.hash = hash;
     }
+
+    setTimeout(() => {
+      const button = docsElement?.querySelector('.SendButtonHolder button');
+      if (button) {
+        button.innerHTML = '调试';
+      }
+    }, 0);
   }, [toolInfo]);
 
   useEffect(() => {

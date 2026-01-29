@@ -19,13 +19,103 @@
     .sl-elements-api > .sl-flex {
       display: none;
     }
-    [data-testid='two-column-right'] > .sl-stack > .sl-panel:nth-child(2) {
+    [data-testid='two-column-right'] > .sl-stack > .sl-panel:nth-child(2),
+    [data-testid='two-column-right'] > .sl-stack > .sl-panel:nth-child(3) {
       display: none;
+    }
+
+    [data-testid='two-column-right'] {
+      max-width: 800px !important;
+      width: 60% !important;
     }
 
     .HttpService > .sl-stack,
     .HttpService > .sl-relative {
       display: none;
+    }
+
+    .SendButtonHolder button {
+      height: 32px !important;
+      line-height: 32px !important;
+      background: var(--custom-theme-color) !important;
+      border-radius: 6px !important;
+      width: 80px;
+      justify-content: center;
+    }
+
+    .OperationParametersContent {
+      max-height: none !important;
+    }
+
+    .TryItPanel {
+      background: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .TryItPanel > .sl-panel > .sl-panel__titlebar,
+    .TryItPanel > .sl-pb-1 > .sl-panel > .sl-panel__titlebar {
+      background: rgb(224, 230, 240) !important;
+      color: rgb(38, 38, 38) !important;
+    }
+
+    .TryItPanel > .sl-panel > .sl-panel__content-wrapper,
+    .TryItPanel > .sl-pb-1 > .sl-panel > .sl-panel__content-wrapper {
+      background: rgb(235, 238, 245) !important;
+      color: rgb(38, 38, 38) !important;
+    }
+
+    // 没有focus，没有hover时，设置border-color
+    .TryItPanel
+      > .sl-panel
+      > .sl-panel__content-wrapper
+      > .OperationParametersContent
+      input.sl-form-group-border:not(.sl-border-danger):not(:focus):not(:hover),
+    .TryItPanel
+      > .sl-panel
+      > .sl-panel__content-wrapper
+      > .OperationParametersContent
+      button.sl-form-group-border:not(.sl-border-danger):not(:focus):not(:hover) {
+      border-radius: 4px !important;
+      border-color: inherit;
+    }
+
+    .TryItPanel
+      > .sl-panel
+      > .sl-panel__content-wrapper
+      > .OperationParametersContent
+      button.sl-form-group-border
+      .sl-text-light {
+      color: rgba(38, 38, 38, 0.4) !important;
+    }
+
+    .TextRequestBody pre {
+      color: black !important;
+    }
+
+    .token.property {
+      color: #005cc5 !important;
+    }
+    .token.operator {
+      color: #d73a49 !important;
+    }
+    .token.number {
+      color: #005cc5 !important;
+    }
+    .token.string {
+      color: #032f62 !important;
+    }
+    .token.boolean {
+      color: #005cc5 !important;
+    }
+    .token.punctuation {
+      color: #333 !important;
+    }
+
+    .TextRequestBody {
+      max-height: none !important;
+    }
+
+    .sl-leading-tight.sl-text-heading {
+      font-size: 32px !important;
     }
   }
 }
