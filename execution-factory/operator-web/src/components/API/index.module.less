@@ -39,7 +39,6 @@
       line-height: 32px !important;
       background: var(--custom-theme-color) !important;
       border-radius: 6px !important;
-      width: 80px;
       justify-content: center;
     }
 
@@ -51,14 +50,12 @@
       background: rgba(0, 0, 0, 0.08) !important;
     }
 
-    .TryItPanel > .sl-panel > .sl-panel__titlebar,
-    .TryItPanel > .sl-pb-1 > .sl-panel > .sl-panel__titlebar {
+    .sl-panel__titlebar {
       background: rgb(224, 230, 240) !important;
       color: rgb(38, 38, 38) !important;
     }
 
-    .TryItPanel > .sl-panel > .sl-panel__content-wrapper,
-    .TryItPanel > .sl-pb-1 > .sl-panel > .sl-panel__content-wrapper {
+    .sl-panel__content-wrapper {
       background: rgb(235, 238, 245) !important;
       color: rgb(38, 38, 38) !important;
     }
@@ -116,6 +113,14 @@
 
     .sl-leading-tight.sl-text-heading {
       font-size: 32px !important;
+    }
+
+    .sl-panel__content-wrapper > .sl-panel__content > div > div:first-child {
+      display: none;
+    }
+
+    .sl-elements-api > .sl-bg-canvas > .sl-py-16 {
+      max-width: none !important;
     }
   }
 }
