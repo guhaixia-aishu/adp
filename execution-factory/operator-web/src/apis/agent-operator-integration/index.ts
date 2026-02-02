@@ -172,8 +172,8 @@ export function getToolList(params: any) {
   return get(`${apis.toolBox}/${params?.box_id}/tools/list`, { params });
 }
 
-export function debugTool(box_id: string, tool_id: string, data: any) {
-  return post(`${apis.toolBox}/${box_id}/tool/${tool_id}/debug`, { body: data });
+export function debugTool(box_id: string, tool_id: string, data: any, options = {}) {
+  return post(`${apis.toolBox}/${box_id}/tool/${tool_id}/debug`, { body: data, ...options });
 }
 
 export function boxToolStatus(box_id: string, data: any) {

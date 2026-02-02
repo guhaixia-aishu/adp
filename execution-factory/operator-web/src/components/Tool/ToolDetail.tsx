@@ -28,7 +28,7 @@ import _ from 'lodash';
 import DetailHeader from '../OperatorList/DetailHeader';
 import { postResourceOperation } from '@/apis/authorization';
 import { useMicroWidgetProps } from '@/hooks';
-import API from '@/components/API';
+import API from '@/components/SwaggerAPI';
 
 const { Sider, Content } = Layout;
 const { Paragraph, Text } = Typography;
@@ -521,7 +521,7 @@ export default function ToolDetail() {
                   />
                 </div>
               ) : (
-                <API toolInfo={selectedToolDetail} operatorType={OperatorTypeEnum.Tool} />
+                <API info={selectedToolDetail} operatorType={OperatorTypeEnum.Tool} />
               )}
             </Content>
           </Layout>

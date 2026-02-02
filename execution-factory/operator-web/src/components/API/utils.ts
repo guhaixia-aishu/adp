@@ -2,7 +2,6 @@ export const splitterStr = '/api-web-proxy';
 
 // 将 toolInfo 转成 OpenAPI 3.0 结构
 export const transformToolInfoToOpenAPI = (toolInfo: any) => {
-  console.log(1111, toolInfo);
   if (!toolInfo.metadata?.api_spec) {
     return {};
   }
@@ -100,4 +99,43 @@ export const path2Hash = (path: string, method: string) => {
     '/' +
     method
   );
+};
+
+// 从openapi中解析出url
+export const parseUrlFromOpenAPI = (spec: any) => {
+  const [path] = Object.keys(spec?.paths || {});
+  const server = spec?.servers?.[0]?.url || '';
+
+  return server + path || '';
+};
+
+// 从头openapi中解析出请求方法
+export const parseHttpMethod = (spec: any) => {
+  const [path] = Object.keys(spec?.paths || {});
+  if (!path) return '';
+
+  const [method] = Object.keys(spec?.paths?.[path] || {});
+
+  return method || '';
+};
+
+// 根据path template和实际请求的path获取path参数
+export const parsePathParamsFromUrl = (templateUrl: string, actualUrl: string) => {
+  const templateParts = templateUrl.split('/');
+  const actualParts = actualUrl.split('/');
+
+  const params = {};
+
+  for (let i = 0; i < templateParts.length; i++) {
+    const templatePart = templateParts[i];
+    const actualPart = actualParts[i];
+
+    // 检查是否是参数占位符 {param_name}
+    if (templatePart.startsWith('{') && templatePart.endsWith('}')) {
+      const paramName = templatePart.slice(1, -1);
+      params[paramName] = actualPart;
+    }
+  }
+
+  return params;
 };

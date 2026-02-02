@@ -6,7 +6,7 @@ import { getOperatorInfo, getOperatorMarketInfo } from '@/apis/agent-operator-in
 import { OperateTypeEnum, OperatorTypeEnum, PermConfigTypeEnum } from '../OperatorList/types';
 import DetailHeader from '../OperatorList/DetailHeader';
 import { postResourceOperation } from '@/apis/authorization';
-import API from '@/components/API';
+import API from '@/components/SwaggerAPI';
 
 const { Content } = Layout;
 
@@ -66,7 +66,7 @@ export default function OperatorDetail() {
       <Layout style={{ padding: '16px', background: '#f5f5f5' }}>
         {/* 右侧内容区域 */}
         <Content style={{ background: 'white', borderRadius: '8px' }}>
-          <API toolInfo={operatorInfo} operatorType={OperatorTypeEnum.Operator} />
+          <API info={operatorInfo} operatorType={OperatorTypeEnum.Operator} />
         </Content>
       </Layout>
     </div>
