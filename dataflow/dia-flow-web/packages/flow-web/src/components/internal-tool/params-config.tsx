@@ -300,7 +300,8 @@ export const ParamsConfig = forwardRef<Validatable, ParamsConfigProps>(
                                     {
                                         targetRect,
                                         height: 264,
-                                        loop: step?.operator === LoopOperator
+                                        loop: step?.operator === LoopOperator,
+                                        currentStepNodes: step && stepNodes[step.id],
                                     },
                                 )
                                     .then((value) => {

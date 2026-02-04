@@ -263,6 +263,7 @@ function MentionPlugin() {
           //调用弹窗组件
           pickVariable((step && stepNodes[step.id]?.path) || [], '', {
             targetRect: undefined,
+            currentStepNodes: step && stepNodes[step.id],
           }).then((value:string) => {
               const variableKey = value;
               // 从 stepOutputs 中查找对应的变量信息
