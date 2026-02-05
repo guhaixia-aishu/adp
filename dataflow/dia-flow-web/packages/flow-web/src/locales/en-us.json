@@ -1184,6 +1184,8 @@
     "tool.error.empty": "Complete the variable setting",
     "tool.error.numStart": "The variable name cannot start with numbers",
     "tool.error.invalid": "The variable name should be within 20 characters and can only contain uppercase and lowercase letters, underscores or numbers",
+    "tool.error.invalidArray": "Please enter a valid array format or select an array variable",
+    "tool.error.invalidObject": "Please enter a valid object format or select an object variable",
     "tool.error.variableNotExist": "This variable does not exist. Please select again",
     "tool.set": "Set variables",
     "tool.setParam": "Enter the variable value",

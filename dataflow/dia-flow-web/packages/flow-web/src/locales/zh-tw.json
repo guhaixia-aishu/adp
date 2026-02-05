@@ -1172,6 +1172,8 @@
     "tool.error.empty": "请完善变量设置",
     "tool.error.numStart": "變數名稱不能以數字為第一個字元",
     "tool.error.invalid": "變數名稱在20個字元以內，只能包含大小寫字母、下劃線或數字",
+    "tool.error.invalidArray": "請輸入有效的陣列格式或選擇陣列變數",
+    "tool.error.invalidObject": "請輸入有效的物件格式或選擇物件變數",
     "tool.error.variableNotExist": "已選變數不存在，請重新選擇",
     "tool.set": "設定變數",
     "tool.setParam": "請輸入變數值",
