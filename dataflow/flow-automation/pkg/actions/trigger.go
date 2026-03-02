@@ -1773,6 +1773,7 @@ func (a *DataFlowDocTrigger) Run(ctx entity.ExecuteContext, params interface{}, 
 			data["id"] = idStr
 			data["object_id"] = idStr
 			data["doc_id"] = idStr
+			data["docid"] = idStr
 		}
 		if bucketStr, ok := bucket.(string); ok && bucketStr != "" {
 			data["bucket"] = bucketStr

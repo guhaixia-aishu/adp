@@ -434,7 +434,7 @@ export const PdfParseTemplates: IWorkflow[] = [
                     "base_type": "content_document",
                     "category": "log",
                     "data_type": "user9",
-                    "documents": "{  \"id\": \"{{__0.item_id}}\",\n  \"rev\": \"{{__0.rev}}\",\n  \"name\": \"{{__0.name}}\"}"
+                    "documents": "{  \"id\": \"{{__0.item_id}}\",\n  \"rev\": \"{{__0.rev}}\",\n  \"name\": \"{{__0.name}}\",\n  \"document_id\": \"{{__0.docid}}\"\n}"
                 }
             }
         ],
@@ -495,7 +495,7 @@ export const PdfParseTemplates: IWorkflow[] = [
                     "base_type": "content_document",
                     "category": "log",
                     "data_type": "user9",
-                    "documents": "{  \"id\": \"{{__0.item_id}}\",\n  \"rev\": \"{{__0.rev}}\",\n  \"name\": \"{{__0.name}}\"}"
+                    "documents": "{  \"id\": \"{{__0.item_id}}\",\n  \"rev\": \"{{__0.rev}}\",\n  \"name\": \"{{__0.name}}\",\n  \"document_id\": \"{{__0.docid}}\"\n}"
                 }
             }
         ],
