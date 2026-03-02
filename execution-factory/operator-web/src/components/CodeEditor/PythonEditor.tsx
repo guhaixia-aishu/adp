@@ -1,19 +1,34 @@
-// import { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
-import { registerPythonCompletion } from './python-completion';
+import { registerPythonCompletion, registerCompletionWithDependencies } from './python-completion';
 
 interface PythonEditorProps {
   className?: string;
   height?: string;
   value?: string;
   options?: editor.IStandaloneEditorConstructionOptions;
+  dependencies?: string[]; // 依赖库
   onChange?: (newValue: string) => void;
 }
 
-function PythonEditor({ className, height, value, options, onChange }: PythonEditorProps) {
-  const handleEditorDidMount = (editor, monaco) => {
+function PythonEditor({ className, height, value, options, onChange, dependencies }: PythonEditorProps) {
+  const tempRef = useRef<any>(null);
+
+  useEffect(() => {
+    return () => {
+      // 卸载补全提供程序
+      tempRef.current?.dispose?.();
+    };
+  }, [dependencies]);
+
+  const handleEditorDidMount = (_: editor.IStandaloneCodeEditor, monaco: typeof import('monaco-editor')) => {
     registerPythonCompletion(monaco);
+
+    if (dependencies?.length) {
+      // 注册依赖库的关键词，用于补全
+      tempRef.current = registerCompletionWithDependencies(monaco, 'python', dependencies);
+    }
   };
 
   return (

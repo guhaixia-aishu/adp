@@ -229,7 +229,13 @@ const generateImportSuggestions = (monaco: any, model: any, range: any) => {
 };
 
 // 生成import语句补全建议
-const generateImportSuggestionsForImportStatement = (monaco: any, model: any, position: any, range: any) => {
+const generateImportSuggestionsForImportStatement = (
+  monaco: any,
+  model: any,
+  position: any,
+  range: any,
+  libs: string[] = PYTHON_BUILTIN_LIBRARIES
+) => {
   const lineContent = model.getLineContent(position.lineNumber);
   const textBeforeCursor = lineContent.substring(0, position.column - 1);
 
@@ -239,7 +245,7 @@ const generateImportSuggestionsForImportStatement = (monaco: any, model: any, po
   );
   if (importMatch) {
     // 返回内置库补全建议
-    return PYTHON_BUILTIN_LIBRARIES.map(libName => ({
+    return libs.map(libName => ({
       label: libName,
       kind: monaco.languages.CompletionItemKind.Module,
       insertText: libName,
@@ -266,7 +272,7 @@ const generateCustomSuggestions = (monaco: any, model: any, position: any, range
 };
 
 // 主补全提供程序
-const createPythonCompletionProvider = (monaco: any) => {
+const createPythonCompletionProvider = (monaco: typeof import('monaco-editor')) => {
   return {
     provideCompletionItems: (model: any, position: any) => {
       // 检查是否应该触发补全
@@ -309,6 +315,42 @@ const createPythonCompletionProvider = (monaco: any) => {
   };
 };
 
+// 创建依赖库补全提供程序
+const createDependenciesSuggestionsProvider = (monaco: typeof import('monaco-editor'), dependencies: string[]) => {
+  return {
+    provideCompletionItems: (model: any, position: any) => {
+      // 检查是否应该触发补全
+      if (!shouldTriggerCompletion(model, position)) {
+        return { suggestions: [] };
+      }
+
+      const word = model.getWordUntilPosition(position);
+      const range = {
+        startLineNumber: position.lineNumber,
+        endLineNumber: position.lineNumber,
+        startColumn: word.startColumn,
+        endColumn: word.endColumn,
+      };
+
+      // 检查是否在import语句中（支持 import math, r 这种格式）
+      const lineContent = model.getLineContent(position.lineNumber);
+      const textBeforeCursor = lineContent.substring(0, position.column - 1);
+      const isInImportStatement =
+        /^\s*(?:import|from)\s+[a-zA-Z_][a-zA-Z0-9_]*(?:\s*,\s*[a-zA-Z_][a-zA-Z0-9_]*)*$/.test(textBeforeCursor.trim());
+
+      // 收集补全建议
+      let suggestions: any[] = [];
+
+      if (isInImportStatement) {
+        // 在import语句中，只显示库名补全
+        suggestions = [...generateImportSuggestionsForImportStatement(monaco, model, position, range, dependencies)];
+      }
+
+      return { suggestions };
+    },
+  };
+};
+
 // 注册 Python 补全提供程序
 let isPythonCompletionRegistered = false;
 export const registerPythonCompletion = (monaco: typeof import('monaco-editor')) => {
@@ -316,4 +358,23 @@ export const registerPythonCompletion = (monaco: typeof import('monaco-editor'))
     isPythonCompletionRegistered = true;
     monaco.languages.registerCompletionItemProvider('python', createPythonCompletionProvider(monaco));
   }
+};
+
+// 注册依赖库补全
+export const registerCompletionWithDependencies = (
+  monaco: typeof import('monaco-editor'),
+  languageSelector: string,
+  dependencies: string[]
+) => {
+  // 过滤掉python的内置库
+  const filteredDependencies = dependencies?.filter(lib => !PYTHON_BUILTIN_LIBRARIES.includes(lib));
+
+  if (!filteredDependencies?.length) {
+    return;
+  }
+
+  return monaco.languages.registerCompletionItemProvider(
+    languageSelector,
+    createDependenciesSuggestionsProvider(monaco, filteredDependencies)
+  );
 };

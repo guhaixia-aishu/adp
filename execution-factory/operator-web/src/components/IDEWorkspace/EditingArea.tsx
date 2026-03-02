@@ -21,6 +21,8 @@ enum TabEnum {
   Metadata = 'metadata',
 }
 
+const dependencies = ['lib1', 'lib2', 'lib3', 'lib4', 'lib5', 'lib6', 'lib7', 'lib8', 'math'];
+
 interface EditingAreaProps {
   operatorType: OperatorTypeEnum.Tool | OperatorTypeEnum.Operator; // 算子类型：工具 or 算子
   value: ToolDetail;
@@ -227,6 +229,7 @@ const EditingArea = forwardRef(({ operatorType, value, onChange }: EditingAreaPr
             }}
             value={value.code}
             onChange={code => onChange({ code })}
+            dependencies={dependencies}
           />
         )}
 
