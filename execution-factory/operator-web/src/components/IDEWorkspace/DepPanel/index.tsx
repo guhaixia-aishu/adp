@@ -78,7 +78,7 @@ const DepPanel: React.FC<DepPanelProps> = ({
   const handleCopy = async () => {
     try {
       const copyValue = [...installedDependencies, ...externalDependencies]
-        .map(item => item.name + '==' + item.version)
+        .map(item => item.name + '@' + item.version)
         .join(', ');
 
       await copy(copyValue);
@@ -96,9 +96,15 @@ const DepPanel: React.FC<DepPanelProps> = ({
           'dip-pl-20 dip-flex-align-center dip-font-16 dip-c-bold dip-user-select-none'
         )}
       >
-        <span className="dip-mr-12">依赖包管理</span>
+        <span className="dip-mr-4">依赖包管理</span>
         <Tooltip title="复制依赖包信息">
-          <Button icon={<CopyIcon />} type="text" style={{ width: 28, height: 28 }} onClick={handleCopy} />
+          <Button
+            icon={<CopyIcon />}
+            type="text"
+            style={{ width: 28, height: 28 }}
+            className="dip-text-color-65"
+            onClick={handleCopy}
+          />
         </Tooltip>
       </div>
 
@@ -143,8 +149,16 @@ const DepPanel: React.FC<DepPanelProps> = ({
                       }}
                     />
                     已安装依赖包
+                    <span
+                      className={classNames(
+                        styles['count'],
+                        'dip-ml-4',
+                        installedDependencies?.length === 0 ? styles['count-empty'] : ''
+                      )}
+                    >
+                      {formatNumber(installedDependencies?.length || 0)}
+                    </span>
                   </span>
-                  <span className={styles['count']}>{formatNumber(installedDependencies?.length || 0)}</span>
                 </div>
               ),
               children: <DepList dependencies={installedDependencies} icon={<Badge status="processing" />} />,
@@ -159,6 +173,25 @@ const DepPanel: React.FC<DepPanelProps> = ({
                       style={{ color: colors[DependencyTypeEnum.External] }}
                     />
                     外部依赖包
+                    <span
+                      className={classNames(
+                        styles['count'],
+                        'dip-ml-4',
+                        externalDependencies?.length === 0 ? styles['count-empty'] : ''
+                      )}
+                    >
+                      {formatNumber(externalDependencies?.length || 0)}
+                    </span>
+                  </span>
+                  <span>
+                    <Tooltip title="添加外部依赖包">
+                      <Button
+                        icon={<PlusOutlined />}
+                        type="text"
+                        className={classNames(styles['add-external-btn'], 'dip-text-color-65')}
+                        onClick={addExternalDeps}
+                      />
+                    </Tooltip>
                     <Popover
                       trigger={['click']}
                       content={
@@ -175,24 +208,15 @@ const DepPanel: React.FC<DepPanelProps> = ({
                         </div>
                       }
                     >
-                      <Button
-                        icon={<SettingOutlined />}
-                        className={classNames('dip-ml-6 dip-text-color-45', styles['external-registry-btn'])}
-                        type="text"
-                        onClick={e => e.stopPropagation()}
-                      />
+                      <Tooltip title="设置依赖包安装源地址" placement="right">
+                        <Button
+                          icon={<SettingOutlined />}
+                          className={classNames('dip-ml-6 dip-text-color-65', styles['external-registry-btn'])}
+                          type="text"
+                          onClick={e => e.stopPropagation()}
+                        />
+                      </Tooltip>
                     </Popover>
-                  </span>
-                  <span>
-                    <span className={styles['count']}>{formatNumber(externalDependencies?.length || 0)}</span>
-                    <Tooltip title="添加外部依赖包">
-                      <Button
-                        icon={<PlusOutlined />}
-                        type="text"
-                        className={styles['add-external-btn']}
-                        onClick={addExternalDeps}
-                      />
-                    </Tooltip>
                   </span>
                 </div>
               ),

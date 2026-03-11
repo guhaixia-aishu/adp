@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams, useLocation, useBlocker } from 'react-router-dom';
 import { uniqBy } from 'lodash';
-import { Layout, Splitter, message, Modal, Button } from 'antd';
+import { Layout, Splitter, message, Modal, Button, Tooltip } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import intl from 'react-intl-universal';
 import {
@@ -565,21 +565,17 @@ const IDEWorkspace = ({ action, operatorType }: IDEWorkspaceProps) => {
       <div className="dip-flex dip-flex-1 dip-overflowY-hidden dip-position-r">
         <div className="dip-flex-1">
           <Splitter>
-            {panelVisible.depPanel && (
-              // 依赖包管理面板
-              <Splitter.Panel size={290} resizable={false} className="dip-h-100">
-                <DepPanel
-                  pypiRepoUrl={detail?.dependencies_url}
-                  installedDependencies={installedDependencies}
-                  externalDependencies={detail?.dependencies || []}
-                  onDeleteExternalDep={deleteExternalDep}
-                  onDependenciesUrlChange={pypiRepoUrl =>
-                    setDetail(prev => ({ ...prev, dependencies_url: pypiRepoUrl }))
-                  }
-                  onAddExternalDep={addExternalDep}
-                />
-              </Splitter.Panel>
-            )}
+            {/* 依赖包管理面板 */}
+            <Splitter.Panel size={panelVisible.depPanel ? 290 : 0} resizable={false} className="dip-h-100">
+              <DepPanel
+                pypiRepoUrl={detail?.dependencies_url}
+                installedDependencies={installedDependencies}
+                externalDependencies={detail?.dependencies || []}
+                onDeleteExternalDep={deleteExternalDep}
+                onDependenciesUrlChange={pypiRepoUrl => setDetail(prev => ({ ...prev, dependencies_url: pypiRepoUrl }))}
+                onAddExternalDep={addExternalDep}
+              />
+            </Splitter.Panel>
 
             <Splitter.Panel min={780}>
               <Splitter layout="vertical" onResize={size => setConsolePanelSize(size[1])}>
@@ -589,6 +585,7 @@ const IDEWorkspace = ({ action, operatorType }: IDEWorkspaceProps) => {
                     value={detail}
                     onChange={handleChangeInfo}
                     ref={editingAreaRef}
+                    depPanelVisible={panelVisible.depPanel}
                   />
                 </Splitter.Panel>
 
@@ -627,28 +624,36 @@ const IDEWorkspace = ({ action, operatorType }: IDEWorkspaceProps) => {
         />
 
         {panelVisible.depPanel && (
-          <Button
-            icon={<LeftOutlined />}
-            className="dip-position-a"
-            style={{
-              left: 290,
-              top: 12,
-              transform: 'translate(-50%, 0)',
-            }}
-            onClick={toggleDepPanelVisible}
-          />
+          <Tooltip title="收起">
+            <Button
+              icon={<LeftOutlined />}
+              className="dip-position-a"
+              style={{
+                left: 260,
+                top: 12,
+                transform: 'translate(-50%, 0)',
+                opacity: 0.5,
+              }}
+              type="text"
+              onClick={toggleDepPanelVisible}
+            />
+          </Tooltip>
         )}
 
         {!panelVisible.depPanel && (
-          <Button
-            icon={<RightOutlined />}
-            className="dip-position-a"
-            style={{
-              left: 0,
-              top: 12,
-            }}
-            onClick={toggleDepPanelVisible}
-          />
+          <Tooltip title="展开">
+            <Button
+              icon={<RightOutlined />}
+              className="dip-position-a"
+              style={{
+                left: 20,
+                top: 12,
+                opacity: 0.5,
+              }}
+              type="text"
+              onClick={toggleDepPanelVisible}
+            />
+          </Tooltip>
         )}
       </div>
       {contextHolder}

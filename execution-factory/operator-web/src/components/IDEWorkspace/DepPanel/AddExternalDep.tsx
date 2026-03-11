@@ -105,6 +105,7 @@ const AddExternalDep: React.FC<AddExternalDepProps> = ({ pypiRepoUrl, onCancel, 
             onChange={e => {
               setSearchKeyword(e.target.value);
             }}
+            onPressEnter={debounceSearchDeps}
           />
           <Button type="primary" disabled={!searchKeyword} onClick={debounceSearchDeps}>
             搜索
@@ -132,6 +133,7 @@ const AddExternalDep: React.FC<AddExternalDepProps> = ({ pypiRepoUrl, onCancel, 
             {({ index, style, data }) => {
               const item = data[index];
               const disabled = item === addedDepVersion;
+              const label = `${searchKeyword}@v${item}`;
               return (
                 <div
                   style={style}
@@ -140,11 +142,17 @@ const AddExternalDep: React.FC<AddExternalDepProps> = ({ pypiRepoUrl, onCancel, 
                     styles['list-item']
                   )}
                 >
-                  <span className="dip-ellipsis" title={item}>
-                    {item}
+                  <span className="dip-ellipsis" title={label}>
+                    {label}
                   </span>
                   <Tooltip title={disabled ? '' : '添加'} placement="right">
-                    <Button icon={<PlusOutlined />} disabled={disabled} type="text" onClick={() => addDep(item)} />
+                    <Button
+                      disabled={disabled}
+                      onClick={() => addDep(item)}
+                      style={{ height: 28, paddingLeft: '12px', paddingRight: '12px', width: 74 }}
+                    >
+                      {disabled ? '已添加' : '添加'}
+                    </Button>
                   </Tooltip>
                 </div>
               );
