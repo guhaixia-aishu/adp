@@ -183,6 +183,11 @@ func SetDBSetting() {
 	if !ok {
 		logger.Fatalf("service %s not found in depServices", rdsServiceName)
 	}
+
+	dbName := DATA_BASE_NAME
+	if d, ok := setting["database"].(string); ok && d != "" {
+		dbName = d
+	}
 	password := setting["password"]
 	pwd := ""
 	switch password.(type) {
@@ -196,7 +201,7 @@ func SetDBSetting() {
 		Port:     setting["port"].(int),
 		Username: setting["user"].(string),
 		Password: pwd,
-		DBName:   DATA_BASE_NAME,
+		DBName:   dbName,
 	}
 }
 
