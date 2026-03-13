@@ -3,7 +3,6 @@ package mgnt
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -17,10 +16,9 @@ import (
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/logics/perm"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/entity"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/mod"
+	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/rds"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/store"
-	"github.com/kweaver-ai/adp/autoflow/flow-automation/store/rds"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // CreateDataFlowReq 创建数据流程请求
@@ -64,7 +62,7 @@ func (m *mgnt) CreateDataFlow(ctx context.Context, param *CreateDataFlowReq, use
 
 	// check duplicated name
 	dagInfo, err := m.mongo.GetDagByFields(ctx, map[string]interface{}{"name": param.Title})
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil && !ierrors.IsNotFoundErr(err) {
 		log.Warnf("[logic.CreateDag] GetDagByFields err, deail: %s", err.Error())
 		return "", ierrors.NewIError(ierrors.InternalError, "", nil)
 	}
@@ -75,7 +73,7 @@ func (m *mgnt) CreateDataFlow(ctx context.Context, param *CreateDataFlowReq, use
 	if param.DeBugID != "" {
 		_, err = m.mongo.GetDag(ctx, param.DeBugID)
 		if err != nil {
-			if errors.Is(err, mongo.ErrNoDocuments) {
+			if ierrors.IsNotFoundErr(err) {
 				return "", ierrors.NewIError(ierrors.InvalidParameter, "", "debug id not found")
 			}
 			log.Warnf("[logic.CreateDag] GetDag err, deail: %s", err.Error())
@@ -180,6 +178,14 @@ func (m *mgnt) CreateDataFlow(ctx context.Context, param *CreateDataFlowReq, use
 		Enable: false,
 	}
 
+	dag.SetCheckRootNode(func(t []entity.Task) error {
+		_, bErr := mod.BuildRootNode(mod.MapTasksToGetter(dag.Tasks))
+		if bErr != nil {
+			return bErr
+		}
+		return nil
+	})
+
 	err = m.validSteps(&Validate{
 		Ctx:         ctx,
 		Steps:       stepList,
@@ -219,11 +225,9 @@ func (m *mgnt) CreateDataFlow(ctx context.Context, param *CreateDataFlowReq, use
 		return "", err
 	}
 
-	err = m.mongo.WithTransaction(ctx, func(sctx mongo.SessionContext) error {
-		// 设置定时任务
-		dagID, err = m.mongo.CreateDag(sctx, dag)
+	err = m.mongo.WithTransaction(ctx, func(nctx context.Context, ms mod.Store) error {
+		dagID, err = ms.CreateDag(nctx, dag)
 		if err != nil {
-			log.Warnf("[logic.CreateDataFlow] CreateDag err, detail: %s", err.Error())
 			return err
 		}
 
@@ -231,15 +235,16 @@ func (m *mgnt) CreateDataFlow(ctx context.Context, param *CreateDataFlowReq, use
 		dagVersion := dagVersions[0]
 		dagVersion.DagID = dagID
 		dagVersion.Config = entity.Config(config)
-		_, err = m.mongo.CreateDagVersion(sctx, dagVersion)
+		_, err = ms.CreateDagVersion(nctx, dagVersion)
 		if err != nil {
-			log.Warnf("[logic.CreateDataFlow] CreateDagVersion err, detail: %s", err.Error())
 			return err
 		}
 
 		return nil
 	})
+
 	if err != nil {
+		log.Warnf("[logic.CreateDataFlow] Transaction err, detail: %s", err.Error())
 		return "", ierrors.NewIError(ierrors.InternalError, "", nil)
 	}
 
@@ -281,8 +286,11 @@ func (m *mgnt) CreateDataFlow(ctx context.Context, param *CreateDataFlowReq, use
 			if !exist {
 				log.Warnf("[logic.CreateDataFlow] RegisterCronJob err, detail: %s", err.Error())
 				// 删除已创建的 dag
-				if berr := m.mongo.BatchDeleteDagWithTransaction(ctx, []string{dagID}); berr != nil {
-					log.Warnf("[logic.CreateDataFlow] BatchDeleteDagWithTransaction err, detail: %s", berr.Error())
+				// if berr := m.mongo.BatchDeleteDagWithTransaction(ctx, []string{dagID}); berr != nil {
+				// 	log.Warnf("[logic.CreateDataFlow] BatchDeleteDagWithTransaction err, detail: %s", berr.Error())
+				// }
+				if berr := m.mongo.DeleteDag(ctx, dagID); berr != nil {
+					log.Warnf("[logic.CreateDataFlow] DeleteDag err, detail: %s", berr.Error())
 				}
 
 				// 创建失败清除已绑定的权限策略配置
@@ -400,7 +408,7 @@ func (m *mgnt) UpdateDataFlow(ctx context.Context, dagID string, param *UpdateDa
 	query := map[string]interface{}{"_id": dagID, "type": common.DagTypeDataFlow}
 	dag, err := m.mongo.GetDagByFields(ctx, query)
 	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
+		if ierrors.IsNotFoundErr(err) {
 			return ierrors.NewIError(ierrors.TaskNotFound, "", map[string]string{"dagId": dagID})
 		}
 		log.Warnf("[logic.UpdateDataFlow] GetDagByFields err, query: %v, detail: %s", query, err.Error())
@@ -445,7 +453,7 @@ func (m *mgnt) UpdateDataFlow(ctx context.Context, dagID string, param *UpdateDa
 		dag.DeBugID = param.DeBugID
 		_, err = m.mongo.GetDag(ctx, param.DeBugID)
 		if err != nil {
-			if errors.Is(err, mongo.ErrNoDocuments) {
+			if ierrors.IsNotFoundErr(err) {
 				return ierrors.NewIError(ierrors.InvalidParameter, "", "debug id not found")
 			}
 			log.Warnf("[logic.UpdateDataFlow] GetDag err, deail: %s", err.Error())
@@ -588,24 +596,23 @@ func (m *mgnt) UpdateDataFlow(ctx context.Context, dagID string, param *UpdateDa
 		return err
 	}
 
-	err = m.mongo.WithTransaction(ctx, func(sctx mongo.SessionContext) error {
-		// 更新dag
-		if err = m.mongo.UpdateDag(sctx, dag); err != nil {
-			log.Warnf("[logic.UpdateDataFlow] UpdateDag err, detail: %s", err.Error())
+	err = m.mongo.WithTransaction(ctx, func(nctx context.Context, ms mod.Store) error {
+		if err = ms.UpdateDag(nctx, dag); err != nil {
 			return err
 		}
 
 		for _, dagVersion := range dagVersions {
-			_, err = m.mongo.CreateDagVersion(sctx, dagVersion)
+			_, err = ms.CreateDagVersion(nctx, dagVersion)
 			if err != nil {
-				log.Warnf("[logic.UpdateDataFlow] CreateDagVersion err, detail: %s", err.Error())
 				return err
 			}
 		}
 
 		return nil
 	})
+
 	if err != nil {
+		log.Warnf("[logic.UpdateDataFlow] Transaction err, detail: %s", err.Error())
 		return ierrors.NewIError(ierrors.InternalError, "", nil)
 	}
 
@@ -701,7 +708,7 @@ func (m *mgnt) DeleteDataFlow(ctx context.Context, dagID, bizDomainID string, us
 
 	dag, err := m.mongo.GetDagByFields(ctx, query)
 	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) || strings.Contains(err.Error(), "data not found") {
+		if ierrors.IsNotFoundErr(err) {
 			return nil
 		}
 		log.Warnf("[logic.DeleteDataFlow] GetDagByFields err, detail: %s", err.Error())

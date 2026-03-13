@@ -254,7 +254,7 @@ depServices:
     host: kn-knowledge-data
     port: 6475
   ecoconfig:
-    publicHost: ecoconfig-public.anyshare 
+    publicHost: ecoconfig-public.anyshare
     publicPort: "32127"
     privateHost: ecoconfig-private.anyshare
     privatePort: "32128"
@@ -420,6 +420,8 @@ flowAutomation:
     dagInstanceEventMaxInlineSize: 262144
     dagInstanceEventArchivePolicy: successOnly
     edition: "community"
+    # 用于控制使用哪种数据库
+    dbType: "mysql"
 
   kafka:
     sessionTimeoutMs: 45000
@@ -441,7 +443,7 @@ flowAutomation:
       timeoutSec: 3600
     docformatconvert:
       timeoutSec: 3600
-    
+
   flow-o11y-data-log:
     log_level: "INFO"
     exporters:

@@ -3,7 +3,6 @@ package mod
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -20,12 +19,11 @@ import (
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/entity"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/event"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/log"
+	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/rds"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/utils"
-	"github.com/kweaver-ai/adp/autoflow/flow-automation/store/rds"
 	cutils "github.com/kweaver-ai/adp/autoflow/flow-automation/utils"
 	"github.com/shiningrush/goevent"
 	"github.com/spaolacci/murmur3"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const (
@@ -593,12 +591,12 @@ func (p *DefParser) parseScheduleDagIns(ctx context.Context, dagIns *entity.DagI
 
 		dag, err := GetStore().GetDagWithOptionalVersion(ctx, dagIns.DagID, dagIns.VersionID)
 		if err != nil {
-			if errors.Is(err, mongo.ErrNoDocuments) || strings.Contains(err.Error(), "data not found") {
+			if aErrs.IsNotFoundErr(err) {
 				if _err := GetStore().BatchDeleteDagIns(ctx, []string{dagIns.ID}); _err != nil {
 					return _err
 				}
 
-				if err := rds.NewDagInstanceExtDataDao().Remove(ctx, &rds.ExtDataQueryOptions{
+				if err := rds.GetDagInstanceExtDataDao().Remove(ctx, &rds.ExtDataQueryOptions{
 					DagInsID: dagIns.ID,
 				}); err != nil {
 					return err

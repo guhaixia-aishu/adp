@@ -37,6 +37,8 @@ import (
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/utils"
 	"github.com/kweaver-ai/adp/autoflow/flow-automation/pkg/utils/data"
 	mongoStore "github.com/kweaver-ai/adp/autoflow/flow-automation/store/mongo"
+	"github.com/kweaver-ai/adp/autoflow/flow-automation/store/rds"
+	dagmodel "github.com/kweaver-ai/adp/autoflow/flow-automation/store/rds/dag"
 	msqclient "github.com/kweaver-ai/proton-mq-sdk-go"
 	"github.com/shiningrush/goevent"
 	"gopkg.in/yaml.v3"
@@ -141,6 +143,7 @@ func Start(opt *InitialOption, afterInit ...func() error) error {
 func Init(opt *InitialOption) error {
 	config := common.NewConfig()
 
+	initRds(config)
 	if err := checkOption(opt); err != nil {
 		return err
 	}
@@ -171,7 +174,7 @@ func Init(opt *InitialOption) error {
 
 	initKeeper(opt)
 	initCluster(config)
-	initRds(config)
+	rds.InitSingleton()
 	initMQClient(config)
 	initFlowO11yLogger()
 
@@ -179,7 +182,7 @@ func Init(opt *InitialOption) error {
 	initLeaderChangedHandler(opt)
 
 	initInternalAccount(config)
-	initAnyData(context.Background(), config)
+	// initAnyData(context.Background(), config)
 
 	RegisterAction([]entity.Action{
 		&actions.ManualTrigger{},
@@ -557,25 +560,25 @@ func Close() {
 
 func checkOption(opt *InitialOption) error {
 	config := common.NewConfig()
-	connStr := config.MongoDB.DSN()
-	database := config.MongoDB.DBName()
-	maxPool := config.MongoDB.MaxPool()
-	minPool := config.MongoDB.MinPool()
 	if opt.Store == nil {
-		// init store
-		st := mongoStore.NewStore(&mongoStore.StoreOption{
-			// if your mongo does not set user/pwd, you should remove it
-			ConnStr:  connStr,
-			Database: database,
-			Prefix:   "flow",
-			MaxPool:  maxPool,
-			MinPool:  minPool,
-			Timeout:  100 * time.Second,
-		})
-		if err := st.Init(); err != nil {
-			log.Fatal(fmt.Errorf("init store failed: %w", err))
+		switch config.Server.DBType {
+		case "mysql":
+			opt.Store = dagmodel.NewDagRepository()
+		default:
+			st := mongoStore.NewStore(&mongoStore.StoreOption{
+				// if your mongo does not set user/pwd, you should remove it
+				ConnStr:  config.MongoDB.DSN(),
+				Database: config.MongoDB.DBName(),
+				Prefix:   "flow",
+				MaxPool:  config.MongoDB.MaxPool(),
+				MinPool:  config.MongoDB.MinPool(),
+				Timeout:  100 * time.Second,
+			})
+			if err := st.Init(); err != nil {
+				log.Fatal(fmt.Errorf("init store failed: %w", err))
+			}
+			opt.Store = st
 		}
-		opt.Store = st
 	}
 
 	if opt.ExecutorTimeout == 0 {
@@ -691,6 +694,15 @@ func ensureDagLatest(dag *entity.Dag) error {
 	if oDag != nil {
 		return mod.GetStore().UpdateDag(context.Background(), dag)
 	}
+
+	dag.SetCheckRootNode(func(t []entity.Task) error {
+		_, bErr := mod.BuildRootNode(mod.MapTasksToGetter(dag.Tasks))
+		if bErr != nil {
+			return bErr
+		}
+		return nil
+	})
+
 	_, err = mod.GetStore().CreateDag(context.Background(), dag)
 	return err
 }
