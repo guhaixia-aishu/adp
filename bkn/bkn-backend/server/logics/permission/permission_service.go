@@ -195,6 +195,7 @@ func (ps *permissionService) FilterResources(ctx context.Context, resourceType s
 
 // 更新资源名称
 func (ps *permissionService) UpdateResource(ctx context.Context, resource interfaces.Resource) error {
+
 	bytes, err := sonic.Marshal(resource)
 	if err != nil {
 		return rest.NewHTTPError(ctx, http.StatusInternalServerError,

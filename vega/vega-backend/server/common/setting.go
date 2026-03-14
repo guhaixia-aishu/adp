@@ -260,21 +260,27 @@ func SetRedisSetting() {
 		logger.Fatalf("service %s not found in depServices", redisServiceName)
 	}
 
+	connectInfo, ok := setting["connectinfo"].(map[string]any)
+	if !ok {
+		logger.Fatalf("service %s connectInfo not found in depServices", redisServiceName)
+	}
+
 	appSetting.RedisSetting = RedisSetting{
 		ConnectType:      setting["connecttype"].(string),
-		Username:         setting["username"].(string),
-		Password:         setting["password"].(string),
-		Host:             setting["host"].(string),
-		Port:             setting["port"].(int),
-		MasterHost:       setting["masterhost"].(string),
-		MasterPort:       setting["masterport"].(int),
-		SlaveHost:        setting["slavehost"].(string),
-		SlavePort:        setting["slaveport"].(int),
-		SentinelHost:     setting["sentinelhost"].(string),
-		SentinelPort:     setting["sentinelport"].(int),
-		SentinelUsername: setting["sentinelusername"].(string),
-		SentinelPassword: setting["sentinelpassword"].(string),
-		MasterGroupName:  setting["mastergroupname"].(string),
+		Username:         connectInfo["username"].(string),
+		Password:         connectInfo["password"].(string),
+		SentinelHost:     connectInfo["sentinelhost"].(string),
+		SentinelPort:     connectInfo["sentinelport"].(int),
+		SentinelUsername: connectInfo["sentinelusername"].(string),
+		SentinelPassword: connectInfo["sentinelpassword"].(string),
+		MasterGroupName:  connectInfo["mastergroupname"].(string),
+
+		Host:       connectInfo["host"].(string),
+		Port:       connectInfo["port"].(int),
+		MasterHost: connectInfo["masterhost"].(string),
+		MasterPort: connectInfo["masterport"].(int),
+		SlaveHost:  connectInfo["slavehost"].(string),
+		SlavePort:  connectInfo["slaveport"].(int),
 	}
 }
 

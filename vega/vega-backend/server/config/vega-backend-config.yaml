@@ -5,7 +5,7 @@ server:
   readTimeOut: 600
   writeTimeOut: 600
 log:
-  logLevel: info
+  logLevel: debug
   developMode: false
   maxAge: 100
   maxBackups: 20
@@ -14,45 +14,57 @@ crypto:
   enabled: true
   privateKeyPath: /opt/vega-backend/secret-config/rsa_private_key_pkcs8.pem
   publicKeyPath: /opt/vega-backend/secret-config/rsa_public_key.pem
+
 depServices:
   class-443:
     ingressClass: class-443
   rds:
-    host: localhost
+    host: mariadb-mariadb-master.resource.svc.cluster.local.
     port: 3330
-    user: username
-    password: password
+    user: root
+    password: ""
     type: MariaDB
   mq:
     mqType: kafka
-    mqHost: localhost
-    mqPort: 9092
+    mqHost: kafka-headless.resource.svc.cluster.local.
+    mqPort: 9097
     protocol: sasl_plaintext
     tenant: default
     auth:
-      username: username
-      password: password
+      username: admin
+      password: ""
       mechanism: PLAIN
   opensearch:
-    host: localhost
+    host: opensearch-master.resource.svc.cluster.local.
     port: 9200
     protocol: http
-    username: username
-    password: password
+    user: admin
+    password: ""
   redis:
-    host: localhost
-    port: 6379
-    username: username
-    password: password
+    connectInfo:
+      username: root
+      password: ''
+      sentinelHost: proton-redis-proton-redis-sentinel.resource.svc.cluster.local
+      sentinelPort: 26379
+      sentinelUsername: root
+      sentinelPassword: ''
+      masterGroupName: mymaster
+      host: ""
+      port: 0
+      masterHost: ""
+      masterPort: 0
+      slaveHost: ""
+      slavePort: 0
+    connectType: sentinel
   authorization-private:
+    host: authorization-private
+    port: 30920
     protocol: http
-    host: localhost
-    port: 8080
   user-management:
+    host: user-management-private
+    port:  30980
     protocol: http
-    host: localhost
-    port: 8080
   hydra-admin:
+    host: hydra-admin
+    port: 4445
     protocol: http
-    host: localhost
-    port: 8080

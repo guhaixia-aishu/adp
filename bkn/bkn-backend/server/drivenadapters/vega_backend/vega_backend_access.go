@@ -54,11 +54,14 @@ func (vba *vegaBackendAccess) buildHeaders(ctx context.Context) map[string]strin
 		interfaces.CONTENT_TYPE_NAME: interfaces.CONTENT_TYPE_JSON,
 	}
 
-	accountInfo := interfaces.AccountInfo{}
+	// accountInfo := interfaces.AccountInfo{}
 	if ctx.Value(interfaces.ACCOUNT_INFO_KEY) != nil {
-		accountInfo = ctx.Value(interfaces.ACCOUNT_INFO_KEY).(interfaces.AccountInfo)
+		accountInfo := ctx.Value(interfaces.ACCOUNT_INFO_KEY).(interfaces.AccountInfo)
 		headers[interfaces.HTTP_HEADER_ACCOUNT_ID] = accountInfo.ID
 		headers[interfaces.HTTP_HEADER_ACCOUNT_TYPE] = accountInfo.Type
+	} else {
+		headers[interfaces.HTTP_HEADER_ACCOUNT_ID] = interfaces.ADMIN_ACCOUNT_ID
+		headers[interfaces.HTTP_HEADER_ACCOUNT_TYPE] = interfaces.ADMIN_ACCOUNT_TYPE
 	}
 
 	return headers

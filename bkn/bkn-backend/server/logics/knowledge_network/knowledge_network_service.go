@@ -16,6 +16,7 @@ import (
 
 	"github.com/bytedance/sonic"
 	"github.com/kweaver-ai/TelemetrySDK-Go/exporter/v2/ar_trace"
+	bknsdk "github.com/kweaver-ai/bkn-specification/sdk/golang/bkn"
 	"github.com/kweaver-ai/kweaver-go-lib/logger"
 	o11y "github.com/kweaver-ai/kweaver-go-lib/observability"
 	"github.com/kweaver-ai/kweaver-go-lib/rest"
@@ -165,6 +166,9 @@ func (kns *knowledgeNetworkService) CreateKN(ctx context.Context, kn *interfaces
 	kn.CreateTime = currentTime
 	kn.UpdateTime = currentTime
 
+	bknNetwork := logics.ToBKNNetWork(kn)
+	kn.BKNRawContent = bknsdk.SerializeBknNetwork(bknNetwork)
+
 	// 0. 开始事务
 	tx, err := kns.db.Begin()
 	if err != nil {
@@ -265,7 +269,6 @@ func (kns *knowledgeNetworkService) CreateKN(ctx context.Context, kn *interfaces
 					WithErrorDetails(err.Error())
 			}
 		}
-
 	}
 
 	// 处理更新情况
@@ -500,7 +503,7 @@ func (kns *knowledgeNetworkService) GetKNByID(ctx context.Context, knID string, 
 			berrors.BknBackend_KnowledgeNetwork_InternalError).WithErrorDetails(err.Error())
 	}
 
-	if mode == "export" {
+	if mode == interfaces.Mode_Export {
 		conceptGroups, _, err := kns.cgs.ListConceptGroups(ctx, interfaces.ConceptGroupsQueryParams{
 			PaginationQueryParameters: interfaces.PaginationQueryParameters{
 				Limit: -1,
@@ -645,6 +648,9 @@ func (kns *knowledgeNetworkService) UpdateKN(ctx context.Context, tx *sql.Tx, kn
 
 	currentTime := time.Now().UnixMilli() // 业务知识网络的update_time是int类型
 	kn.UpdateTime = currentTime
+
+	bknNetwork := logics.ToBKNNetWork(kn)
+	kn.BKNRawContent = bknsdk.SerializeBknNetwork(bknNetwork)
 
 	if tx == nil {
 		// 0. 开始事务
@@ -1025,7 +1031,7 @@ func (kns *knowledgeNetworkService) InsertDatasetData(ctx context.Context, origK
 		Comment:        origKN.Comment,
 		Icon:           origKN.Icon,
 		Color:          origKN.Color,
-		Detail:         origKN.Detail,
+		BKNRawContent:  origKN.BKNRawContent,
 		Branch:         origKN.Branch,
 		BusinessDomain: origKN.BusinessDomain,
 		Creator:        origKN.Creator,
@@ -1038,7 +1044,7 @@ func (kns *knowledgeNetworkService) InsertDatasetData(ctx context.Context, origK
 	if kns.appSetting.ServerSetting.DefaultSmallModelEnabled {
 		words := []string{kn.KNName}
 		words = append(words, kn.Tags...)
-		words = append(words, kn.Comment, kn.Detail)
+		words = append(words, kn.Comment, kn.BKNRawContent)
 		word := strings.Join(words, "\n")
 
 		defaultModel, err := kns.mfa.GetDefaultModel(ctx)
