@@ -10,8 +10,8 @@
 package mock_condition
 
 import (
-	condition "bkn-backend/common/condition"
 	context "context"
+	condition "ontology-query/common/condition"
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"
@@ -42,7 +42,7 @@ func (m *MockCondition) EXPECT() *MockConditionMockRecorder {
 }
 
 // Convert mocks base method.
-func (m *MockCondition) Convert(ctx context.Context, vectorizer func(context.Context, []string) ([]*condition.VectorResp, error)) (string, error) {
+func (m *MockCondition) Convert(ctx context.Context, vectorizer func(context.Context, *condition.DataProperty, string) ([]condition.VectorResp, error)) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Convert", ctx, vectorizer)
 	ret0, _ := ret[0].(string)
