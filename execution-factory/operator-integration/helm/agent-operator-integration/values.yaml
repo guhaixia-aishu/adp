@@ -72,6 +72,14 @@ service:
     maxClients: 50 # 单位秒
     clientLifetime: 600 # 单位秒
 
+# 认证开关
+auth:
+  enabled: true
+
+# 业务域开关
+businessDomain:
+  enabled: true
+
 depServices:
   class-443:
     ingressClass: class-443
@@ -168,6 +176,13 @@ depServices:
     maxSessions: 3
     activeSessions: 1
     maxConcurrentTasks: 100
+  oss-gateway-backend:
+    privateHost: "oss-gateway-backend"
+    privatePort: 8080
+    privateProtocol: "http"
+    storageID: ""
+    internalRequest: false
+    expires: 3600
 
 env:
   language: en_US.UTF-8

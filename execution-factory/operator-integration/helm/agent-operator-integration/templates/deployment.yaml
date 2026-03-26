@@ -75,6 +75,10 @@ spec:
               - name: DB_TYPE
                 value: {{ .Values.depServices.rds.type | quote }}
             {{- end}}
+              - name: AUTH_ENABLED
+                value: {{ .Values.auth.enabled | quote }}
+              - name: BUSINESS_DOMAIN_ENABLED
+                value: {{ .Values.businessDomain.enabled | quote }}
 
           ports:
             - name: public-port

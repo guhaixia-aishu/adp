@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	jsoniter "github.com/json-iterator/go"
-	o11y "github.com/kweaver-ai/kweaver-go-lib/observability"
 	"github.com/kweaver-ai/adp/execution-factory/operator-integration/server/infra/common"
 	"github.com/kweaver-ai/adp/execution-factory/operator-integration/server/infra/common/ormhelper"
 	"github.com/kweaver-ai/adp/execution-factory/operator-integration/server/infra/errors"
@@ -16,6 +15,7 @@ import (
 	"github.com/kweaver-ai/adp/execution-factory/operator-integration/server/logics/auth"
 	"github.com/kweaver-ai/adp/execution-factory/operator-integration/server/logics/metadata"
 	"github.com/kweaver-ai/adp/execution-factory/operator-integration/server/utils"
+	o11y "github.com/kweaver-ai/kweaver-go-lib/observability"
 )
 
 // GetOperatorInfoByOperatorID 根据算子ID或版本获取算子(外部接口) -- 查询算子详情
@@ -143,17 +143,11 @@ func (m *operatorManager) GetOperatorQueryPage(ctx context.Context, req *interfa
 			err = errors.DefaultHTTPError(ctx, http.StatusInternalServerError, err.Error())
 			return
 		}
-		operatorInfo.BusinessDomainID = resourceToBdMap[operator.OperatorID]
-		operatorInfo.CreateUser = utils.GetValueOrDefault(userMap, operatorInfo.CreateUser, "")
-		operatorInfo.UpdateUser = utils.GetValueOrDefault(userMap, operatorInfo.UpdateUser, "")
+		operatorInfo.BusinessDomainID = utils.GetValueOrDefault(resourceToBdMap, operator.OperatorID, req.BusinessDomainID)
+		operatorInfo.CreateUser = utils.GetValueOrDefault(userMap, operatorInfo.CreateUser, interfaces.UnknownUser)
+		operatorInfo.UpdateUser = utils.GetValueOrDefault(userMap, operatorInfo.UpdateUser, interfaces.UnknownUser)
 		result.Data = append(result.Data, operatorInfo)
-		// userList = append(userList, userIDs...)
 	}
-
-	// for i := range result.Data {
-	// 	result.Data[i].CreateUser = utils.GetValueOrDefault(userMap, result.Data[i].CreateUser, "")
-	// 	result.Data[i].UpdateUser = utils.GetValueOrDefault(userMap, result.Data[i].UpdateUser, "")
-	// }
 	return
 }
 

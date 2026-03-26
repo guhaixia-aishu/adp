@@ -78,9 +78,9 @@ func (s *ToolServiceImpl) GetToolBox(ctx context.Context, req *interfaces.GetToo
 		return
 	}
 	resp.Tools = append(resp.Tools, toolInfos...)
-	resp.CreateUser = userMap[toolBox.CreateUser]
-	resp.UpdateUser = userMap[toolBox.UpdateUser]
-	resp.ReleaseUser = userMap[toolBox.ReleaseUser]
+	resp.CreateUser = utils.GetValueOrDefault(userMap, toolBox.CreateUser, interfaces.UnknownUser)
+	resp.UpdateUser = utils.GetValueOrDefault(userMap, toolBox.UpdateUser, interfaces.UnknownUser)
+	resp.ReleaseUser = utils.GetValueOrDefault(userMap, toolBox.ReleaseUser, interfaces.UnknownUser)
 	return
 }
 
@@ -145,9 +145,13 @@ func (s *ToolServiceImpl) DeleteBoxByID(ctx context.Context, req *interfaces.Del
 
 	// 记录审计日志
 	go func() {
-		tokenInfo, _ := infracommon.GetTokenInfoFromCtx(ctx)
+		accountAuthContext, ok := infracommon.GetAccountAuthContextFromCtx(ctx)
+		if !ok {
+			s.Logger.WithContext(ctx).Warnf("[DeleteToolBox] GetAccountAuthContextFromCtx err :%v", err)
+			return
+		}
 		s.AuditLog.Logger(ctx, &metric.AuditLogBuilderParams{
-			TokenInfo: tokenInfo,
+			TokenInfo: accountAuthContext.TokenInfo,
 			Accessor:  accessor,
 			Operation: metric.AuditLogOperationDelete,
 			Object: &metric.AuditLogObject{
@@ -275,9 +279,13 @@ func (s *ToolServiceImpl) UpdateToolBoxStatus(ctx context.Context, req *interfac
 	// 记录审计日志
 	if operation != "" {
 		go func() {
-			tokenInfo, _ := infracommon.GetTokenInfoFromCtx(ctx)
+			accountAuthContext, ok := infracommon.GetAccountAuthContextFromCtx(ctx)
+			if !ok {
+				s.Logger.WithContext(ctx).Warnf("[UpdateToolBoxStatus] GetAccountAuthContextFromCtx err :%v", err)
+				return
+			}
 			s.AuditLog.Logger(ctx, &metric.AuditLogBuilderParams{
-				TokenInfo: tokenInfo,
+				TokenInfo: accountAuthContext.TokenInfo,
 				Accessor:  accessor,
 				Operation: operation,
 				Object: &metric.AuditLogObject{
@@ -421,9 +429,13 @@ func (s *ToolServiceImpl) DeleteBoxTool(ctx context.Context, req *interfaces.Bat
 				ToolName: tool.Name,
 			})
 		}
-		tokenInfo, _ := infracommon.GetTokenInfoFromCtx(ctx)
+		accountAuthContext, ok := infracommon.GetAccountAuthContextFromCtx(ctx)
+		if !ok {
+			s.Logger.WithContext(ctx).Warnf("[DeleteBoxTool] GetAccountAuthContextFromCtx err :%v", err)
+			return
+		}
 		s.AuditLog.Logger(ctx, &metric.AuditLogBuilderParams{
-			TokenInfo: tokenInfo,
+			TokenInfo: accountAuthContext.TokenInfo,
 			Accessor:  accessor,
 			Operation: metric.AuditLogOperationEdit,
 			Object: &metric.AuditLogObject{
@@ -652,9 +664,13 @@ func (s *ToolServiceImpl) UpdateToolStatus(ctx context.Context, req *interfaces.
 				ToolName: tool.Name,
 			})
 		}
-		tokenInfo, _ := infracommon.GetTokenInfoFromCtx(ctx)
+		accountAuthContext, ok := infracommon.GetAccountAuthContextFromCtx(ctx)
+		if !ok {
+			s.Logger.WithContext(ctx).Warnf("[UpdateToolStatus] GetAccountAuthContextFromCtx err :%v", err)
+			return
+		}
 		s.AuditLog.Logger(ctx, &metric.AuditLogBuilderParams{
-			TokenInfo: tokenInfo,
+			TokenInfo: accountAuthContext.TokenInfo,
 			Accessor:  accessor,
 			Operation: metric.AuditLogOperationEdit,
 			Object: &metric.AuditLogObject{
@@ -728,8 +744,8 @@ func (s *ToolServiceImpl) batchGetToolInfoAndUserInfo(ctx context.Context, tools
 	}
 	// 填充元数据信息
 	for _, toolInfo := range toolInfos {
-		toolInfo.CreateUser = userMap[toolInfo.CreateUser]
-		toolInfo.UpdateUser = userMap[toolInfo.UpdateUser]
+		toolInfo.CreateUser = utils.GetValueOrDefault(userMap, toolInfo.CreateUser, interfaces.UnknownUser)
+		toolInfo.UpdateUser = utils.GetValueOrDefault(userMap, toolInfo.UpdateUser, interfaces.UnknownUser)
 		metadataDB, ok := sourceIDToMetadataMap[toolIDSourceMap[toolInfo.ToolID]]
 		if !ok {
 			s.Logger.WithContext(ctx).Errorf("metadata not found, toolID: %s", toolInfo.ToolID)

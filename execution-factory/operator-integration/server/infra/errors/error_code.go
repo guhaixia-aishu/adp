@@ -96,6 +96,18 @@ const (
 	ErrExtCategoryNameExist ErrorCode = "CategoryNameExist" // 算子分类名称已存在
 )
 
+// Skill拓展错误码定义
+const (
+	// 当前Agent Skill不允许删除
+	ErrExtSkillUnSupportDelete ErrorCode = "SkillUnSupportDelete" // 当前Agent Skill不允许删除
+	// 技能状态无效
+	ErrExtSkillStatusInvalid ErrorCode = "SkillStatusInvalid" // 技能状态无效
+	// 技能名称重复
+	ErrExtSkillNameDuplicate ErrorCode = "SkillNameDuplicate" // 技能名称重复
+	// 技能分类不存在
+	ErrExtSkillCategoryNotFound ErrorCode = "SkillCategoryNotFound" // 技能分类不存在
+)
+
 // 代理模块错误码定义
 const (
 	// 请求转发失败，请检查是否可用，或稍后重试
@@ -202,6 +214,10 @@ const (
 	ErrExtPypiRepoUnavailable ErrorCode = "PypiRepoUnavailable" // PyPI仓库不可用，请检查网络连接或稍后重试
 	// Pypi源解析器错误
 	ErrExtPypiParserFailed ErrorCode = "PypiParserFailed" // 版本联想功能需镜像源支持 JSON API (如 PyPI 官方、清华源等)，请检查镜像源配置是否正确
+	// 请求OSS网关失败
+	ErrExtOSSGatewayFailed ErrorCode = "OSSGatewayFailed" // 请求OSS网关失败，请检查网关配置是否正确
+	// 默认OSS网关存储不存在
+	ErrExtOSSGatewayDefaultStorageNotFound ErrorCode = "OSSGatewayDefaultStorageNotFound" // 默认OSS网关存储不存在，请检查网关配置是否正确
 )
 
 const (

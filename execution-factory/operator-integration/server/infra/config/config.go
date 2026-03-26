@@ -50,6 +50,15 @@ type Config struct {
 	MFModelAPI               PrivateBaseConfig         `yaml:"mf-model-api"`
 	MFModelManager           PrivateBaseConfig         `yaml:"mf-model-manager"`
 	AIGenerationConfig       AIGenerationConfig        `yaml:"ai_generation_config"`
+	OSSGatewayBackendConfig  OSSGatewayBackendConfig   `yaml:"oss-gateway-backend"`
+}
+
+// OSSGatewayBackendConfig OSS 网关后端配置
+type OSSGatewayBackendConfig struct {
+	PrivateBaseConfig `yaml:",inline"`
+	StorageID         string `yaml:"storage_id"`
+	InternalRequest   bool   `yaml:"internal_request" default:"false"`
+	Expires           int64  `yaml:"expires" default:"3600"` // 单位（秒）
 }
 
 // SandboxControlPlaneConfig 沙箱控制服务配置
@@ -381,4 +390,18 @@ func (conf *Config) initO11yAndLog() {
 		return
 	}
 	configLoader.Logger = logger.NewLogger(level, logger.DefaultCalldepth)
+}
+
+// GetAuthEnabled returns whether ISF auth dependencies are enabled.
+// Only explicit false/0 disables the feature; default is enabled.
+func GetAuthEnabled() bool {
+	envVal := os.Getenv("AUTH_ENABLED")
+	return envVal != "false" && envVal != "0"
+}
+
+// GetBusinessDomainEnabled returns whether business-domain integration is enabled.
+// Only explicit false/0 disables the feature; default is enabled.
+func GetBusinessDomainEnabled() bool {
+	envVal := os.Getenv("BUSINESS_DOMAIN_ENABLED")
+	return envVal != "false" && envVal != "0"
 }
