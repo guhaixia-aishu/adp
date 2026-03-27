@@ -7,6 +7,7 @@ package driveradapters
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -137,20 +138,6 @@ func Test_ConceptGroupRestHandler_CreateConceptGroup(t *testing.T) {
 			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
 		})
 
-		Convey("CreateConceptGroupByIn - Success\n", func() {
-			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
-			cgs.EXPECT().CreateConceptGroup(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return("cg1", nil)
-
-			urlIn := "/api/bkn-backend/in/v1/knowledge-networks/" + knID + "/concept-groups"
-			reqParamByte, _ := sonic.Marshal(conceptGroup)
-			req := httptest.NewRequest(http.MethodPost, urlIn, bytes.NewReader(reqParamByte))
-			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
-			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
-			w := httptest.NewRecorder()
-			engine.ServeHTTP(w, req)
-
-			So(w.Result().StatusCode, ShouldEqual, http.StatusCreated)
-		})
 	})
 }
 
@@ -235,22 +222,6 @@ func Test_ConceptGroupRestHandler_UpdateConceptGroup(t *testing.T) {
 			So(w.Result().StatusCode, ShouldEqual, http.StatusForbidden)
 		})
 
-		Convey("UpdateConceptGroupByIn - Success\n", func() {
-			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
-			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("old_group1", true, nil)
-			cgs.EXPECT().CheckConceptGroupExistByName(gomock.Any(), knID, gomock.Any(), conceptGroup.CGName).Return("", false, nil)
-			cgs.EXPECT().UpdateConceptGroup(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
-
-			urlIn := "/api/bkn-backend/in/v1/knowledge-networks/" + knID + "/concept-groups/" + cgID
-			reqParamByte, _ := sonic.Marshal(conceptGroup)
-			req := httptest.NewRequest(http.MethodPut, urlIn, bytes.NewReader(reqParamByte))
-			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
-			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
-			w := httptest.NewRecorder()
-			engine.ServeHTTP(w, req)
-
-			So(w.Result().StatusCode, ShouldEqual, http.StatusNoContent)
-		})
 	})
 }
 
@@ -359,18 +330,6 @@ func Test_ConceptGroupRestHandler_ListConceptGroups(t *testing.T) {
 			So(w.Result().StatusCode, ShouldEqual, http.StatusForbidden)
 		})
 
-		Convey("ListConceptGroupsByIn - Success\n", func() {
-			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
-			cgs.EXPECT().ListConceptGroups(gomock.Any(), gomock.Any()).Return([]*interfaces.ConceptGroup{}, 0, nil)
-
-			urlIn := "/api/bkn-backend/in/v1/knowledge-networks/" + knID + "/concept-groups"
-			req := httptest.NewRequest(http.MethodGet, urlIn, nil)
-			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
-			w := httptest.NewRecorder()
-			engine.ServeHTTP(w, req)
-
-			So(w.Result().StatusCode, ShouldEqual, http.StatusOK)
-		})
 	})
 }
 
@@ -489,18 +448,6 @@ func Test_ConceptGroupRestHandler_GetConceptGroup(t *testing.T) {
 			So(w.Result().StatusCode, ShouldEqual, http.StatusOK)
 		})
 
-		Convey("GetConceptGroupByIn - Success\n", func() {
-			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
-			cgs.EXPECT().GetConceptGroupByID(gomock.Any(), knID, gomock.Any(), cgID, gomock.Any()).Return(&interfaces.ConceptGroup{}, nil)
-
-			urlIn := "/api/bkn-backend/in/v1/knowledge-networks/" + knID + "/concept-groups/" + cgID
-			req := httptest.NewRequest(http.MethodGet, urlIn, nil)
-			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
-			w := httptest.NewRecorder()
-			engine.ServeHTTP(w, req)
-
-			So(w.Result().StatusCode, ShouldEqual, http.StatusOK)
-		})
 	})
 }
 
@@ -627,21 +574,6 @@ func Test_ConceptGroupRestHandler_AddObjectTypesToConceptGroup(t *testing.T) {
 			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
 		})
 
-		Convey("AddObjectTypesToConceptGroupByIn - Success\n", func() {
-			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
-			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("group1", true, nil)
-			cgs.EXPECT().AddObjectTypesToConceptGroup(gomock.Any(), gomock.Any(), knID, gomock.Any(), cgID, gomock.Any(), gomock.Any()).Return([]string{"ot1"}, nil)
-
-			urlIn := "/api/bkn-backend/in/v1/knowledge-networks/" + knID + "/concept-groups/" + cgID + "/object-types"
-			reqParamByte, _ := sonic.Marshal(requestData)
-			req := httptest.NewRequest(http.MethodPost, urlIn, bytes.NewReader(reqParamByte))
-			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
-			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
-			w := httptest.NewRecorder()
-			engine.ServeHTTP(w, req)
-
-			So(w.Result().StatusCode, ShouldEqual, http.StatusCreated)
-		})
 	})
 }
 
@@ -820,7 +752,177 @@ func Test_ConceptGroupRestHandler_DeleteObjectTypesFromGroup(t *testing.T) {
 			So(w.Result().StatusCode, ShouldEqual, http.StatusNotFound)
 		})
 
-		Convey("DeleteObjectTypesFromGroupByIn - Success\n", func() {
+	})
+}
+
+func newConceptGroupTestHandler(t *testing.T) (*restHandler, *gomock.Controller, *gin.Engine, *bmock.MockConceptGroupService, *bmock.MockKNService) {
+	t.Helper()
+	mockCtrl := gomock.NewController(t)
+	engine := gin.New()
+	engine.Use(gin.Recovery())
+	appSetting := &common.AppSetting{}
+	as := bmock.NewMockAuthService(mockCtrl)
+	cgs := bmock.NewMockConceptGroupService(mockCtrl)
+	kns := bmock.NewMockKNService(mockCtrl)
+	handler := MockNewConceptGroupRestHandler(appSetting, as, cgs, kns)
+	handler.RegisterPublic(engine)
+	return handler, mockCtrl, engine, cgs, kns
+}
+
+func Test_ConceptGroupRestHandler_CreateConceptGroupByIn(t *testing.T) {
+	Convey("Test ConceptGroupHandler CreateConceptGroupByIn\n", t, func() {
+		test := setGinMode()
+		defer test()
+		_, mockCtrl, engine, cgs, kns := newConceptGroupTestHandler(t)
+		defer mockCtrl.Finish()
+
+		knID := "kn1"
+		conceptGroup := interfaces.ConceptGroup{
+			CGName: "group1",
+			CommonInfo: interfaces.CommonInfo{
+				Comment: "test comment",
+			},
+		}
+
+		Convey("Success\n", func() {
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CreateConceptGroup(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return("cg1", nil)
+
+			reqParamByte, _ := sonic.Marshal(conceptGroup)
+			req := httptest.NewRequest(http.MethodPost, "/api/bkn-backend/in/v1/knowledge-networks/"+knID+"/concept-groups", bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+
+			So(w.Result().StatusCode, ShouldEqual, http.StatusCreated)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_UpdateConceptGroupByIn(t *testing.T) {
+	Convey("Test ConceptGroupHandler UpdateConceptGroupByIn\n", t, func() {
+		test := setGinMode()
+		defer test()
+		_, mockCtrl, engine, cgs, kns := newConceptGroupTestHandler(t)
+		defer mockCtrl.Finish()
+
+		knID := "kn1"
+		cgID := "cg1"
+		conceptGroup := interfaces.ConceptGroup{
+			CGID:   cgID,
+			CGName: "group1",
+		}
+
+		Convey("Success\n", func() {
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("old_group1", true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByName(gomock.Any(), knID, gomock.Any(), conceptGroup.CGName).Return("", false, nil)
+			cgs.EXPECT().UpdateConceptGroup(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
+
+			reqParamByte, _ := sonic.Marshal(conceptGroup)
+			req := httptest.NewRequest(http.MethodPut, "/api/bkn-backend/in/v1/knowledge-networks/"+knID+"/concept-groups/"+cgID, bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+
+			So(w.Result().StatusCode, ShouldEqual, http.StatusNoContent)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_ListConceptGroupsByIn(t *testing.T) {
+	Convey("Test ConceptGroupHandler ListConceptGroupsByIn\n", t, func() {
+		test := setGinMode()
+		defer test()
+		_, mockCtrl, engine, cgs, kns := newConceptGroupTestHandler(t)
+		defer mockCtrl.Finish()
+
+		knID := "kn1"
+
+		Convey("Success\n", func() {
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().ListConceptGroups(gomock.Any(), gomock.Any()).Return([]*interfaces.ConceptGroup{}, 0, nil)
+
+			req := httptest.NewRequest(http.MethodGet, "/api/bkn-backend/in/v1/knowledge-networks/"+knID+"/concept-groups", nil)
+			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+
+			So(w.Result().StatusCode, ShouldEqual, http.StatusOK)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_GetConceptGroupByIn(t *testing.T) {
+	Convey("Test ConceptGroupHandler GetConceptGroupByIn\n", t, func() {
+		test := setGinMode()
+		defer test()
+		_, mockCtrl, engine, cgs, kns := newConceptGroupTestHandler(t)
+		defer mockCtrl.Finish()
+
+		knID := "kn1"
+		cgID := "cg1"
+
+		Convey("Success\n", func() {
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().GetConceptGroupByID(gomock.Any(), knID, gomock.Any(), cgID, gomock.Any()).Return(&interfaces.ConceptGroup{}, nil)
+
+			req := httptest.NewRequest(http.MethodGet, "/api/bkn-backend/in/v1/knowledge-networks/"+knID+"/concept-groups/"+cgID, nil)
+			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+
+			So(w.Result().StatusCode, ShouldEqual, http.StatusOK)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_AddObjectTypesToConceptGroupByIn(t *testing.T) {
+	Convey("Test ConceptGroupHandler AddObjectTypesToConceptGroupByIn\n", t, func() {
+		test := setGinMode()
+		defer test()
+		_, mockCtrl, engine, cgs, kns := newConceptGroupTestHandler(t)
+		defer mockCtrl.Finish()
+
+		knID := "kn1"
+		cgID := "cg1"
+		requestData := struct {
+			Entries []interfaces.ID `json:"entries"`
+		}{
+			Entries: []interfaces.ID{{ID: "ot1"}},
+		}
+
+		Convey("Success\n", func() {
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("group1", true, nil)
+			cgs.EXPECT().AddObjectTypesToConceptGroup(gomock.Any(), gomock.Any(), knID, gomock.Any(), cgID, gomock.Any(), gomock.Any()).Return([]string{"ot1"}, nil)
+
+			reqParamByte, _ := sonic.Marshal(requestData)
+			req := httptest.NewRequest(http.MethodPost, "/api/bkn-backend/in/v1/knowledge-networks/"+knID+"/concept-groups/"+cgID+"/object-types", bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+
+			So(w.Result().StatusCode, ShouldEqual, http.StatusCreated)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_DeleteObjectTypesFromGroupByIn(t *testing.T) {
+	Convey("Test ConceptGroupHandler DeleteObjectTypesFromGroupByIn\n", t, func() {
+		test := setGinMode()
+		defer test()
+		_, mockCtrl, engine, cgs, kns := newConceptGroupTestHandler(t)
+		defer mockCtrl.Finish()
+
+		knID := "kn1"
+		cgID := "cg1"
+		otIDs := "ot1,ot2"
+
+		Convey("Success\n", func() {
 			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
 			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("group1", true, nil)
 			cgs.EXPECT().ListConceptGroupRelations(gomock.Any(), gomock.Any()).DoAndReturn(func(ctx interface{}, query interface{}) ([]interfaces.ConceptGroupRelation, error) {
@@ -839,13 +941,383 @@ func Test_ConceptGroupRestHandler_DeleteObjectTypesFromGroup(t *testing.T) {
 			})
 			cgs.EXPECT().DeleteObjectTypesFromGroup(gomock.Any(), gomock.Any(), knID, gomock.Any(), cgID, gomock.Any()).Return(nil)
 
-			urlIn := "/api/bkn-backend/in/v1/knowledge-networks/" + knID + "/concept-groups/" + cgID + "/object-types/" + otIDs
-			req := httptest.NewRequest(http.MethodDelete, urlIn, nil)
+			req := httptest.NewRequest(http.MethodDelete, "/api/bkn-backend/in/v1/knowledge-networks/"+knID+"/concept-groups/"+cgID+"/object-types/"+otIDs, nil)
 			req.Header.Set(interfaces.HTTP_HEADER_ACCOUNT_ID, "user1")
 			w := httptest.NewRecorder()
 			engine.ServeHTTP(w, req)
 
 			So(w.Result().StatusCode, ShouldEqual, http.StatusNoContent)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_CreateConceptGroup_extraCases(t *testing.T) {
+	Convey("Test ConceptGroupHandler CreateConceptGroup extra cases\n", t, func() {
+		test := setGinMode()
+		defer test()
+
+		engine := gin.New()
+		engine.Use(gin.Recovery())
+
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		appSetting := &common.AppSetting{}
+		as := bmock.NewMockAuthService(mockCtrl)
+		cgs := bmock.NewMockConceptGroupService(mockCtrl)
+		kns := bmock.NewMockKNService(mockCtrl)
+
+		handler := MockNewConceptGroupRestHandler(appSetting, as, cgs, kns)
+		handler.RegisterPublic(engine)
+
+		as.EXPECT().VerifyToken(gomock.Any(), gomock.Any()).AnyTimes().Return(hydra.Visitor{}, nil)
+
+		knID := "kn1"
+		url := "/api/bkn-backend/v1/knowledge-networks/" + knID + "/concept-groups"
+
+		conceptGroup := interfaces.ConceptGroup{
+			CGName: "group1",
+			CommonInfo: interfaces.CommonInfo{
+				Comment: "test comment",
+			},
+		}
+
+		Convey("Failed when validate_dependency is invalid\n", func() {
+			reqParamByte, _ := sonic.Marshal(conceptGroup)
+			req := httptest.NewRequest(http.MethodPost, url+"?validate_dependency=notbool", bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusBadRequest)
+		})
+
+		Convey("Failed when module_type is wrong\n", func() {
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cg := interfaces.ConceptGroup{
+				CGName:     "group1",
+				ModuleType: "wrong_module",
+				CommonInfo: interfaces.CommonInfo{Comment: "test"},
+			}
+			reqParamByte, _ := sonic.Marshal(cg)
+			req := httptest.NewRequest(http.MethodPost, url, bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusForbidden)
+		})
+
+		Convey("Failed when CreateConceptGroup service returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CreateConceptGroup(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return("", httpErr)
+
+			reqParamByte, _ := sonic.Marshal(conceptGroup)
+			req := httptest.NewRequest(http.MethodPost, url, bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_UpdateConceptGroup_extraCases(t *testing.T) {
+	Convey("Test ConceptGroupHandler UpdateConceptGroup extra cases\n", t, func() {
+		test := setGinMode()
+		defer test()
+
+		engine := gin.New()
+		engine.Use(gin.Recovery())
+
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		appSetting := &common.AppSetting{}
+		as := bmock.NewMockAuthService(mockCtrl)
+		cgs := bmock.NewMockConceptGroupService(mockCtrl)
+		kns := bmock.NewMockKNService(mockCtrl)
+
+		handler := MockNewConceptGroupRestHandler(appSetting, as, cgs, kns)
+		handler.RegisterPublic(engine)
+
+		as.EXPECT().VerifyToken(gomock.Any(), gomock.Any()).AnyTimes().Return(hydra.Visitor{}, nil)
+
+		knID := "kn1"
+		cgID := "cg1"
+		url := "/api/bkn-backend/v1/knowledge-networks/" + knID + "/concept-groups/" + cgID
+
+		conceptGroup := interfaces.ConceptGroup{
+			CGID:   cgID,
+			CGName: "group1",
+		}
+
+		Convey("Failed when CheckKNExistByID returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return("", false, httpErr)
+
+			reqParamByte, _ := sonic.Marshal(conceptGroup)
+			req := httptest.NewRequest(http.MethodPut, url, bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+
+		Convey("Failed when CheckConceptGroupExistByID returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("", false, httpErr)
+
+			reqParamByte, _ := sonic.Marshal(conceptGroup)
+			req := httptest.NewRequest(http.MethodPut, url, bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+
+		Convey("Failed ValidateConceptGroup with empty CGName\n", func() {
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("old_group", true, nil)
+
+			reqParamByte, _ := sonic.Marshal(interfaces.ConceptGroup{})
+			req := httptest.NewRequest(http.MethodPut, url, bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusBadRequest)
+		})
+
+		Convey("Failed when CheckConceptGroupExistByName returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("old_name", true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByName(gomock.Any(), knID, gomock.Any(), conceptGroup.CGName).Return("", false, httpErr)
+
+			reqParamByte, _ := sonic.Marshal(conceptGroup)
+			req := httptest.NewRequest(http.MethodPut, url, bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+
+		Convey("Failed when concept group name already exists\n", func() {
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("old_name", true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByName(gomock.Any(), knID, gomock.Any(), conceptGroup.CGName).Return(cgID, true, nil)
+
+			reqParamByte, _ := sonic.Marshal(conceptGroup)
+			req := httptest.NewRequest(http.MethodPut, url, bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusForbidden)
+		})
+
+		Convey("Failed when UpdateConceptGroup service returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("old_name", true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByName(gomock.Any(), knID, gomock.Any(), conceptGroup.CGName).Return("", false, nil)
+			cgs.EXPECT().UpdateConceptGroup(gomock.Any(), gomock.Any(), gomock.Any()).Return(httpErr)
+
+			reqParamByte, _ := sonic.Marshal(conceptGroup)
+			req := httptest.NewRequest(http.MethodPut, url, bytes.NewReader(reqParamByte))
+			req.Header.Set(interfaces.CONTENT_TYPE_NAME, interfaces.CONTENT_TYPE_JSON)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_DeleteConceptGroup_extraCases(t *testing.T) {
+	Convey("Test ConceptGroupHandler DeleteConceptGroup extra cases\n", t, func() {
+		test := setGinMode()
+		defer test()
+
+		engine := gin.New()
+		engine.Use(gin.Recovery())
+
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		appSetting := &common.AppSetting{}
+		as := bmock.NewMockAuthService(mockCtrl)
+		cgs := bmock.NewMockConceptGroupService(mockCtrl)
+		kns := bmock.NewMockKNService(mockCtrl)
+
+		handler := MockNewConceptGroupRestHandler(appSetting, as, cgs, kns)
+		handler.RegisterPublic(engine)
+
+		as.EXPECT().VerifyToken(gomock.Any(), gomock.Any()).AnyTimes().Return(hydra.Visitor{}, nil)
+
+		knID := "kn1"
+		cgID := "cg1"
+		url := "/api/bkn-backend/v1/knowledge-networks/" + knID + "/concept-groups/" + cgID
+
+		Convey("Failed when CheckKNExistByID returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return("", false, httpErr)
+
+			req := httptest.NewRequest(http.MethodDelete, url, nil)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+
+		Convey("Failed when CheckConceptGroupExistByID returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("", false, httpErr)
+
+			req := httptest.NewRequest(http.MethodDelete, url, nil)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+
+		Convey("Failed when DeleteConceptGroupByID service returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().CheckConceptGroupExistByID(gomock.Any(), knID, gomock.Any(), cgID).Return("group1", true, nil)
+			cgs.EXPECT().DeleteConceptGroupByID(gomock.Any(), gomock.Any(), knID, gomock.Any(), cgID).Return(httpErr)
+
+			req := httptest.NewRequest(http.MethodDelete, url, nil)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_ListConceptGroups_extraCases(t *testing.T) {
+	Convey("Test ConceptGroupHandler ListConceptGroups extra cases\n", t, func() {
+		test := setGinMode()
+		defer test()
+
+		engine := gin.New()
+		engine.Use(gin.Recovery())
+
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		appSetting := &common.AppSetting{}
+		as := bmock.NewMockAuthService(mockCtrl)
+		cgs := bmock.NewMockConceptGroupService(mockCtrl)
+		kns := bmock.NewMockKNService(mockCtrl)
+
+		handler := MockNewConceptGroupRestHandler(appSetting, as, cgs, kns)
+		handler.RegisterPublic(engine)
+
+		as.EXPECT().VerifyToken(gomock.Any(), gomock.Any()).AnyTimes().Return(hydra.Visitor{}, nil)
+
+		knID := "kn1"
+		url := "/api/bkn-backend/v1/knowledge-networks/" + knID + "/concept-groups"
+
+		Convey("Failed when CheckKNExistByID returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return("", false, httpErr)
+
+			req := httptest.NewRequest(http.MethodGet, url, nil)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+
+		Convey("Failed when pagination parameters are invalid\n", func() {
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+
+			req := httptest.NewRequest(http.MethodGet, url+"?limit=invalid", nil)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusBadRequest)
+		})
+
+		Convey("Failed when ListConceptGroups service returns error\n", func() {
+			httpErr := &rest.HTTPError{
+				HTTPCode: http.StatusInternalServerError,
+				Language: rest.DefaultLanguage,
+				BaseError: rest.BaseError{ErrorCode: berrors.BknBackend_ConceptGroup_InternalError},
+			}
+			kns.EXPECT().CheckKNExistByID(gomock.Any(), knID, gomock.Any()).Return(knID, true, nil)
+			cgs.EXPECT().ListConceptGroups(gomock.Any(), gomock.Any()).Return(nil, 0, httpErr)
+
+			req := httptest.NewRequest(http.MethodGet, url, nil)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+		})
+	})
+}
+
+func Test_ConceptGroupRestHandler_DeleteConceptGroup_authFail(t *testing.T) {
+	Convey("Test ConceptGroupHandler DeleteConceptGroup auth fail\n", t, func() {
+		test := setGinMode()
+		defer test()
+
+		engine := gin.New()
+		engine.Use(gin.Recovery())
+
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		appSetting := &common.AppSetting{}
+		as := bmock.NewMockAuthService(mockCtrl)
+		cgs := bmock.NewMockConceptGroupService(mockCtrl)
+		kns := bmock.NewMockKNService(mockCtrl)
+
+		handler := MockNewConceptGroupRestHandler(appSetting, as, cgs, kns)
+		handler.RegisterPublic(engine)
+
+		knID := "kn1"
+		cgID := "cg1"
+		url := "/api/bkn-backend/v1/knowledge-networks/" + knID + "/concept-groups/" + cgID
+
+		Convey("Failed when VerifyToken returns error\n", func() {
+			as.EXPECT().VerifyToken(gomock.Any(), gomock.Any()).Return(hydra.Visitor{}, fmt.Errorf("token invalid"))
+
+			req := httptest.NewRequest(http.MethodDelete, url, nil)
+			w := httptest.NewRecorder()
+			engine.ServeHTTP(w, req)
+			So(w.Result().StatusCode, ShouldEqual, http.StatusUnauthorized)
 		})
 	})
 }
