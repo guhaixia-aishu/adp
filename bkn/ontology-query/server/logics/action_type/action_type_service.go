@@ -142,6 +142,7 @@ func (ats *actionTypeService) GetActionsByActionTypeID(ctx context.Context,
 					return resps, rest.NewHTTPError(ctx, http.StatusBadRequest, oerrors.OntologyQuery_InternalError_UnMarshalDataFailed).
 						WithErrorDetails(err.Error())
 				}
+
 				actions = append(actions, action)
 			}
 
@@ -212,6 +213,7 @@ func (ats *actionTypeService) GetActionsByActionTypeID(ctx context.Context,
 					return resps, rest.NewHTTPError(ctx, http.StatusBadRequest, oerrors.OntologyQuery_InternalError_UnMarshalDataFailed).
 						WithErrorDetails(err.Error())
 				}
+
 				actions = append(actions, action)
 			}
 
