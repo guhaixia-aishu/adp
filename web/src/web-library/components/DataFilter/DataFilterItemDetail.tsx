@@ -69,7 +69,14 @@ const DataFilterItemDetail = ({ fieldList, value, onChange, transformType, typeO
   const renderItem = (formatType: any, val: any): JSX.Element => {
     const { operation } = val;
 
-    if (operation === 'exist' || operation === 'not_exist' || operation === 'not_empty' || operation === 'empty') {
+    if (
+      operation === 'exist' ||
+      operation === 'not_exist' ||
+      operation === 'not_empty' ||
+      operation === 'empty' ||
+      operation === 'null' ||
+      operation === 'not_null'
+    ) {
       return <></>;
     }
     let curVal = val.value;
@@ -97,6 +104,15 @@ const DataFilterItemDetail = ({ fieldList, value, onChange, transformType, typeO
     } else if (formatType === 'date') {
       curVal =
         value.value?.length === 2 ? `${dayjs(value.value[0]).format('YYYY-MM-DD HH:mm:ss')} ~ ${dayjs(value.value[1]).format('YYYY-MM-DD HH:mm:ss')}` : '';
+    } else if (operation === 'multi_match') {
+      const fields = value.fields?.join(', ') || '';
+      const matchValue = value.value || '';
+      const matchType = value.match_type || 'best_fields';
+      curVal = `${fields} : ${matchValue} (${intl.get(`DataFilter.${matchType}`)})`;
+    } else if (operation === 'knn') {
+      const knnValue = value.value || '';
+      const limitValue = value.limit_value || 3000;
+      curVal = `${knnValue} (Top K: ${limitValue})`;
     }
 
     return <div className={cs('detail-col')}>{curVal}</div>;
@@ -108,9 +124,12 @@ const DataFilterItemDetail = ({ fieldList, value, onChange, transformType, typeO
         {value?.field}
       </div>
       <div className={cs('operation-col', 'detail-col')}>{value?.operation ? intl.get(`DataFilter.${value?.operation}`) : ''}</div>
-      {value?.operation !== 'exist' && value?.operation !== 'not_exist' && value.operation !== 'not_empty' && value.operation !== 'empty' && (
-        <div className={cs('operation-col', 'detail-col')}>{intl.get(`DataFilter.${valueFroms[0]}`)}</div>
-      )}
+      {value?.operation !== 'exist' &&
+        value?.operation !== 'not_exist' &&
+        value.operation !== 'not_empty' &&
+        value.operation !== 'empty' &&
+        value.operation !== 'null' &&
+        value.operation !== 'not_null' && <div className={cs('operation-col', 'detail-col')}>{intl.get(`DataFilter.${valueFroms[0]}`)}</div>}
       <div className={cs('value-col')}>{renderItem(formatType, value)}</div>
     </div>
   );
