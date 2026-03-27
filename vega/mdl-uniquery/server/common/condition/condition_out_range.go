@@ -64,7 +64,7 @@ func (cond *OutRangeCond) Convert(ctx context.Context) (string, error) {
 		format := ""
 		switch lt.(type) {
 		case string:
-			format = "strict_date_optional_time"
+			format = "yyyy-MM-dd HH:mm:ss.SSS"
 		case float64:
 			format = "epoch_millis"
 			lt = int64(lt.(float64))
@@ -132,14 +132,14 @@ func (cond *OutRangeCond) Convert2SQL(ctx context.Context) (string, error) {
 	// 处理字符串类型的值，需要用单引号包裹
 	ltStr, ok := lt.(string)
 	if ok {
-		ltStr = Special.Replace(fmt.Sprintf("%q", ltStr))
+		ltStr = fmt.Sprintf("'%s'", Special.Replace(ltStr))
 	} else {
 		ltStr = fmt.Sprintf("%v", lt)
 	}
 
 	gteStr, ok := gte.(string)
 	if ok {
-		gteStr = Special.Replace(fmt.Sprintf("%q", gteStr))
+		gteStr = fmt.Sprintf("'%s'", Special.Replace(gteStr))
 	} else {
 		gteStr = fmt.Sprintf("%v", gte)
 	}

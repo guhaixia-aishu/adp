@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -100,6 +101,9 @@ func (dvmService *dataViewMonitorService) syncViews(ctx context.Context) error {
 	defer func() {
 		if r := recover(); r != nil {
 			logger.Errorf("Error syncing views: %v", r)
+			// 打印完整的堆栈信息，它会告诉你具体的行号和函数调用链
+			fmt.Println("堆栈跟踪:")
+			debug.PrintStack()
 		}
 	}()
 
@@ -524,8 +528,8 @@ func (dvmService *dataViewMonitorService) processBatch(ctx context.Context, batc
 				needUpdatedTables = append(needUpdatedTables, table)
 			}
 		} else {
-			logger.Warnf("meta table id '%s', name '%s' in data source '%s' fields are empty, skip",
-				table.TableID, table.Table.Name, dataSource.Name)
+			logger.Warnf("meta table id '%s' in data source '%s' fields are empty, skip",
+				table.TableID, dataSource.Name)
 		}
 	}
 
