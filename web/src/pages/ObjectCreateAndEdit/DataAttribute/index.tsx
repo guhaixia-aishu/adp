@@ -67,6 +67,8 @@ const orderFieldsWithSelectedFirst = (fields: TFieldSelectOption[], selectedName
   return [...selectedFields, ...restFields];
 };
 
+const isSupportedDataViewFieldName = (name: string) => !name.startsWith('_') && !name.startsWith('@');
+
 const isConnectionValid = (sourceHandle: string, targetHandle: string) => {
   const isViewToData = sourceHandle.startsWith('view') && targetHandle.startsWith('data');
   const isDataToView = sourceHandle.startsWith('data') && targetHandle.startsWith('view');
@@ -253,7 +255,7 @@ const DataAttribute = forwardRef((props: TProps, ref) => {
       if (result?.[0]) {
         const fields = result?.[0]?.fields || [];
         const resetFields = fields
-          .filter((item: OntologyObjectType.Field) => !item.name.startsWith('_'))
+          .filter((item: OntologyObjectType.Field) => isSupportedDataViewFieldName(item.name))
           .map((item: OntologyObjectType.Field) => ({
             ...item,
             id: nanoid(),
